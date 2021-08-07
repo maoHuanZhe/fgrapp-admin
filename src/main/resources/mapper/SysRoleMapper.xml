@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.admin.dao.SysRoleMapper">
+    <sql id="selectRoleVo">
+        select distinct r.id, r.roleName, r.roleKey, r.roleSort, r.dataScope, r.menuCheckStrictly,
+                        r.status, r.delFlag, r.createTime
+        from sys_role r
+                 left join sys_user_role ur on ur.roleId = r.id
+                 left join sys_user u on u.id = ur.userId
+    </sql>
+    <insert id="insetRoleMenuList">
+        insert into sys_role_menu(roleId, menuId) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.roleId},#{item.menuId})
+        </foreach>
+    </insert>
+    <delete id="deleteRoleMenuByRoleId">
+        delete from sys_role_menu where roleId = #{id}
+    </delete>
+    <delete id="deleteRoleMenu">
+        delete from sys_role_menu where roleId in
+        <foreach collection="list" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </delete>
+    <select id="selectRolePermissionByUserId" resultType="com.fgrapp.admin.domain.SysRoleDo">
+        <include refid="selectRoleVo"/>
+        WHERE r.delFlag = '0' and ur.userId = #{userId}
+    </select>
+    <select id="selectRolesByUserName" resultType="com.fgrapp.admin.domain.SysRoleDo">
+        <include refid="selectRoleVo"/>
+        WHERE r.delFlag = '0' and u.userName = #{userName}
+    </select>
+    <select id="getPage" resultType="java.util.Map">
+        select
+            id, roleName, roleKey, roleSort, dataScope, menuCheckStrictly,
+               status, delFlag, createAt, createTime, updateAt, updateTime
+        from sys_role
+        where delFlag = '0'
+        <if test="ew.roleName != null and ew.roleName != ''">
+            AND roleName like concat('%', #{ew.roleName}, '%')
+        </if>
+        <if test="ew.status != null and ew.status != ''">
+            AND status = #{ew.status}
+        </if>
+        <if test="ew.roleKey != null and ew.roleKey != ''">
+            AND roleKey like concat('%', #{ew.roleKey}, '%')
+        </if>
+        <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+            and date_format(createTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+        </if>
+        <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+            and date_format(createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+        </if>
+    </select>
+    <select id="countUserRoleByRoleId" resultType="java.lang.Integer">
+        select count(roleId) from sys_user_role where roleId in
+        <foreach collection="list" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </select>
+</mapper>

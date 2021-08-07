@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.admin.dao.SysLogininforMapper">
+    <select id="getPage" resultType="java.util.HashMap">
+        select id, userName, ipaddr, browser, os, status, msg, loginTime
+        from sys_logininfor
+        <where>
+            <if test="ew.ipaddr != null and ew.ipaddr != ''">
+                AND ipaddr like concat('%', #{ew.ipaddr}, '%')
+            </if>
+            <if test="ew.status != null and ew.status != ''">
+                AND status = #{ew.status}
+            </if>
+            <if test="ew.userName != null and ew.userName != ''">
+                AND userName like concat('%', #{ew.userName}, '%')
+            </if>
+            <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(loginTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+            </if>
+            <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(loginTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+</mapper>

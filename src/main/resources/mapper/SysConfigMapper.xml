@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.admin.dao.SysConfigMapper">
+    <select id="getPage" resultType="java.util.Map">
+        select
+            id, configName, configKey, configValue, configType, createAt, createTime, updateAt, updateTime
+        from sys_config
+        <where>
+            <if test="ew.configName != null and ew.configName != ''">
+                AND configName like concat('%', #{ew.configName}, '%')
+            </if>
+            <if test="ew.configType != null and ew.configType != ''">
+                AND configType = #{ew.configType}
+            </if>
+            <if test="ew.configKey != null and ew.configKey != ''">
+                AND configKey like concat('%', #{ew.configKey}, '%')
+            </if>
+            <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(createTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+            </if>
+            <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+</mapper>

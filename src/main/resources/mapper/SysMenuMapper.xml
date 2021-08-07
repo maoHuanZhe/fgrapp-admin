@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.admin.dao.SysMenuMapper">
+    <select id="selectMenuPermsByUserId" resultType="java.lang.String">
+        select distinct m.perms
+        from sys_menu m
+                 left join sys_role_menu rm on m.id = rm.menuId
+                 left join sys_user_role ur on rm.roleId = ur.roleId
+                 left join sys_role r on r.id = ur.roleId
+        where m.status = '0' and r.status = '0' and ur.userId = #{userId}
+    </select>
+    <select id="selectMenuTreeAll" resultType="com.fgrapp.admin.domain.SysMenuDo">
+        select distinct m.ID, m.parentId, m.menuName, m.path, m.component, m.visible, m.status, ifnull(m.perms,'') as perms, m.isFrame, m.isCache, m.menuType, m.icon, m.orderNum, m.createTime
+        from sys_menu m where m.menuType in ('M', 'C') and m.status = 0
+        order by m.parentId, m.orderNum
+    </select>
+    <select id="selectMenuTreeByUserId" resultType="com.fgrapp.admin.domain.SysMenuDo">
+        select distinct m.ID, m.parentId, m.menuName, m.path, m.component, m.visible, m.status, ifnull(m.perms,'') as perms, m.isFrame, m.isCache, m.menuType, m.icon, m.orderNum, m.createTime
+        from sys_menu m
+                 left join sys_role_menu rm on m.id = rm.menuId
+                 left join sys_user_role ur on rm.roleId = ur.roleId
+                 left join sys_role ro on ur.roleId = ro.id
+                 left join sys_user u on ur.userId = u.id
+        where u.id = #{userId} and m.menuType in ('M', 'C') and m.status = 0  AND ro.status = 0
+        order by m.parentId, m.orderNum
+    </select>
+    <select id="selectMenuList" resultType="com.fgrapp.admin.domain.SysMenuDo">
+        select id, menuName, parentId, orderNum, path, component, isFrame, isCache,
+               menuType, visible, status, ifnull(perms,'') as perms, icon, createAt, createTime, updateAt, updateTime
+        from sys_menu
+        <where>
+            <if test="menuName != null and menuName != ''">
+                AND menuName like concat('%', #{menuName}, '%')
+            </if>
+            <if test="visible != null and visible != ''">
+                AND visible = #{visible}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        order by parentId, orderNum
+    </select>
+    <select id="selectMenuListByUserId" resultType="com.fgrapp.admin.domain.SysMenuDo">
+        select distinct m.ID, m.parentId, m.menuName, m.path, m.component, m.visible, m.status,
+                        ifnull(m.perms,'') as perms, m.isFrame, m.isCache, m.menuType, m.icon,
+                        m.orderNum, m.createTime
+        from sys_menu m
+                 left join sys_role_menu rm on m.id = rm.menuId
+                 left join sys_user_role ur on rm.roleId = ur.roleId
+        <where>
+                ur.userId = #{userId}
+            <if test="menuName != null and menuName != ''">
+                AND menuName like concat('%', #{menuName}, '%')
+            </if>
+            <if test="visible != null and visible != ''">
+                AND visible = #{visible}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        order by parentId, orderNum
+    </select>
+    <select id="checkMenuExistRole" resultType="java.lang.Integer">
+        select count(menuId) from sys_role_menu where menuId = #{menuId}
+    </select>
+</mapper>

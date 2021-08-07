@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.admin.dao.SysOperLogMapper">
+    <select id="getPage" resultType="java.util.Map">
+        select
+                id, title, businessType, method, requestMethod, operatorType, operUrl,
+               operIp, operLocation, operParam, jsonResult, status, errorMsg, createAt, createTime
+        from sys_oper_log
+        <where>
+            <if test="ew.title != null and ew.title != ''">
+                AND title like concat('%', #{ew.title}, '%')
+            </if>
+            <if test="ew.businessType != null and ew.businessType != ''">
+                AND businessType = #{ew.businessType}
+            </if>
+            <if test="ew.businessTypes != null and ew.businessTypes.length > 0">
+                AND businessType in
+                <foreach collection="ew.businessTypes" item="businessType" open="(" separator="," close=")">
+                    #{businessType}
+                </foreach>
+            </if>
+            <if test="ew.status != null">
+                AND status = #{ew.status}
+            </if>
+            <if test="ew.operName != null and ew.operName != ''">
+                AND operName like concat('%', #{ew.operName}, '%')
+            </if>
+            <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(createTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+            </if>
+            <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+</mapper>
