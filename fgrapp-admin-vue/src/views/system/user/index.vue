@@ -298,7 +298,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "User",
   components: { Treeselect },
-  data() {
+  data: function () {
     return {
       // 遮罩层
       loading: true,
@@ -349,7 +349,7 @@ export default {
         // 是否更新已经存在的用户数据
         updateSupport: 0,
         // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
+        headers: {Authorization: "Bearer " + getToken()},
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/user/importData"
       },
@@ -364,24 +364,24 @@ export default {
       },
       // 列信息
       columns: [
-        { key: 0, label: `用户编号`, visible: true },
-        { key: 1, label: `用户名称`, visible: true },
-        { key: 2, label: `用户昵称`, visible: true },
-        { key: 3, label: `手机号码`, visible: true },
-        { key: 4, label: `状态`, visible: true },
-        { key: 5, label: `创建时间`, visible: true }
+        {key: 0, label: `用户编号`, visible: true},
+        {key: 1, label: `用户名称`, visible: true},
+        {key: 2, label: `用户昵称`, visible: true},
+        {key: 3, label: `手机号码`, visible: true},
+        {key: 4, label: `状态`, visible: true},
+        {key: 5, label: `创建时间`, visible: true}
       ],
       // 表单校验
       rules: {
         userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" }
+          {required: true, message: "用户名称不能为空", trigger: "blur"}
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
+          {required: true, message: "用户昵称不能为空", trigger: "blur"}
         ],
         password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+          {required: true, message: "用户密码不能为空", trigger: "blur"},
+          {min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur'}
         ],
         email: [
           {
@@ -428,16 +428,6 @@ export default {
           this.loading = false;
         }
       );
-    },
-    // 筛选节点
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
-    },
-    // 节点单击事件
-    handleNodeClick(data) {
-      this.queryParams.deptId = data.id;
-      this.getList();
     },
     // 用户状态修改
     handleStatusChange(row) {
@@ -544,7 +534,7 @@ export default {
         inputPattern: /^.{5,20}$/,
         inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
       }).then(({ value }) => {
-          resetUserPwd(row.id, value).then(response => {
+          resetUserPwd(row.id, value).then(() => {
             this.msgSuccess("修改成功，新密码是：" + value);
           });
         }).catch(() => {});
@@ -558,14 +548,14 @@ export default {
     submitForm: function() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.id != undefined) {
-            updateUser(this.form).then(response => {
+          if (this.form.id !== undefined) {
+            updateUser(this.form).then(() => {
               this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addUser(this.form).then(response => {
+            addUser(this.form).then(() => {
               this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -615,11 +605,11 @@ export default {
       });
     },
     // 文件上传中处理
-    handleFileUploadProgress(event, file, fileList) {
+    handleFileUploadProgress() {
       this.upload.isUploading = true;
     },
     // 文件上传成功处理
-    handleFileSuccess(response, file, fileList) {
+    handleFileSuccess(response) {
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();

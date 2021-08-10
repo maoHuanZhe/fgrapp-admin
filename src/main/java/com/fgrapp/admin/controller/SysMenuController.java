@@ -72,5 +72,10 @@ public class SysMenuController extends FgrController {
     public List<TreeSelectVo> treeselect(SysMenuDo menu){
         return service.treeselect(menu);
     }
+    @ApiOperation(value = "获取角色对应菜单列表")
+    @GetMapping("/roleMenuTreeselect/{roleId}")
+    public List<Integer> roleMenuTreeselect(@PathVariable("roleId") Long roleId){
+        return service.selectMenuListByRoleId(roleId);
+    }
 
 }

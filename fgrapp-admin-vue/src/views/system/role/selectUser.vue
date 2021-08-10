@@ -106,13 +106,13 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.userIds = selection.map(item => item.userId);
+      this.userIds = selection.map(item => item.id);
     },
     // 查询表数据
     getList() {
       unallocatedUserList(this.queryParams).then(res => {
-        this.userList = res.rows;
-        this.total = res.total;
+        this.userList = res.data.records;
+        this.total = res.data.total;
       });
     },
     /** 搜索按钮操作 */
@@ -128,14 +128,17 @@ export default {
     /** 选择授权用户操作 */
     handleSelectUser() {
       const roleId = this.queryParams.roleId;
-      const userIds = this.userIds.join(",");
-      authUserSelectAll({ roleId: roleId, userIds: userIds }).then(res => {
-        this.msgSuccess(res.msg);
-        if (res.code === 200) {
+      if (this.userIds.length){
+        authUserSelectAll({ roleId: roleId, userIds: this.userIds }).then(res => {
           this.visible = false;
           this.$emit("ok");
-        }
-      });
+          this.msgSuccess("授权成功");
+        });
+      } else {
+        this.visible = false;
+        this.$emit("ok");
+        this.msgError("没有可授权用户");
+      }
     }
   }
 };

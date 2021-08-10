@@ -33,4 +33,6 @@ public interface SysMenuMapper extends FgrMapper<SysMenuDo> {
     List<SysMenuDo> selectMenuListByUserId(SysMenuDo info, @Param("userId") Long userId);
 
     int checkMenuExistRole(Long menuId);
+
+    List<Integer> selectMenuListByRoleId(@Param("roleId") Long roleId, @Param("menuCheckStrictly") boolean menuCheckStrictly);
 }

@@ -32,7 +32,7 @@ import java.util.List;
 public class SysUserOnlineController {
 
     @ApiOperation(value = "获取在线用户列表")
-    @SaCheckPermission("'monitor:online:list")
+    @SaCheckPermission("monitor:online:list")
     @GetMapping("/list")
     public List<SysLogininforDo> page(String ipaddr, String userName){
         // 查询所有账号Session会话

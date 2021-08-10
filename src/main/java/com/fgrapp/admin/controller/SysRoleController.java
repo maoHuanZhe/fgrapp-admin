@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fgrapp.admin.domain.SysRoleDo;
+import com.fgrapp.admin.domain.SysUserRole;
 import com.fgrapp.admin.service.SysRoleService;
 import com.fgrapp.base.controller.FgrController;
 import com.fgrapp.base.log.BusinessType;
@@ -73,6 +74,14 @@ public class SysRoleController extends FgrController {
     public SysRoleDo edit(@Validated @RequestBody SysRoleDo info){
         return service.edit(info);
     }
+    @ApiOperation(value = "状态修改")
+    @SaCheckPermission("system:role:edit")
+    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
+    @CacheEvict(value = "roleId",allEntries = true)
+    @PutMapping("/changeStatus")
+    public int changeStatus(@RequestBody SysRoleDo info){
+        return service.changeStatus(info);
+    }
     @ApiOperation(value = "批量删除角色信息")
     @SaCheckPermission("system:role:remove")
     @Log(title = "角色管理", businessType = BusinessType.DELETE)
@@ -81,4 +90,40 @@ public class SysRoleController extends FgrController {
     public int remove(@PathVariable List<Long> roleIds){
         return service.deleteByIds(roleIds);
     }
+
+
+    @ApiOperation(value = "查询已分配用户角色列表")
+    @SaCheckPermission("system:role:list")
+    @GetMapping("/authUser/allocatedList")
+    public IPage<List<Map<String, Object>>> allocatedList(@RequestParam Map<String,Object> map){
+        return service.allocatedList(map);
+    }
+    @ApiOperation(value = "查询未分配用户角色列表")
+    @SaCheckPermission("system:role:list")
+    @GetMapping("/authUser/unallocatedList")
+    public IPage<List<Map<String, Object>>> unallocatedList(@RequestParam Map<String,Object> map){
+        return service.unallocatedList(map);
+    }
+    @ApiOperation(value = "取消授权用户")
+    @Log(title = "角色管理", businessType = BusinessType.GRANT)
+    @SaCheckPermission("system:role:edit")
+    @PutMapping("/authUser/cancel")
+    public int cancelAuthUser(@RequestBody SysUserRole userRole){
+        return service.cancelAuthUser(userRole);
+    }
+    @ApiOperation(value = "批量取消授权用户")
+    @Log(title = "角色管理", businessType = BusinessType.GRANT)
+    @SaCheckPermission("system:role:d")
+    @DeleteMapping("/authUser/{roleId}/{userIds}")
+    public int cancelAuthUserAll(@PathVariable("roleId") Long roleId, @PathVariable("userIds") List<Long> userIds){
+        return service.cancelAuthUserAll(roleId,userIds);
+    }
+    @ApiOperation(value = "批量选择用户授权")
+    @Log(title = "角色管理", businessType = BusinessType.GRANT)
+    @SaCheckPermission("system:role:remove")
+    @PutMapping("/authUser/{roleId}/{userIds}")
+    public void selectAuthUserAll(@PathVariable("roleId") Long roleId, @PathVariable("userIds") List<Long> userIds){
+        service.selectAuthUserAll(roleId,userIds);
+    }
+
 }

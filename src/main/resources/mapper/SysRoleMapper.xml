@@ -23,6 +23,15 @@
             #{roleId}
         </foreach>
     </delete>
+    <delete id="deleteUserRoleInfo">
+        delete from sys_user_role where userId = #{userId} and roleId = #{roleId}
+    </delete>
+    <delete id="cancelAuthUserAll">
+        delete from sys_user_role where roleId = #{roleId} and userId in
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
     <select id="selectRolePermissionByUserId" resultType="com.fgrapp.admin.domain.SysRoleDo">
         <include refid="selectRoleVo"/>
         WHERE r.delFlag = '0' and ur.userId = #{userId}
@@ -58,5 +67,33 @@
         <foreach collection="list" item="roleId" open="(" separator="," close=")">
             #{roleId}
         </foreach>
+    </select>
+    <select id="allocatedList" resultType="java.util.Map">
+        select
+        id, userName, nickName, userType, email, phonenumber, sex, avatar, password, status,
+                        delFlag, loginIp, loginDate, createAt, createTime, updateAt, updateTime
+        from sys_user u
+        left join sys_user_role ur on u.id = ur.userId
+        where u.delFlag = '0' and ur.roleId = #{ew.roleId}
+        <if test="ew.userName != null and ew.userName != ''">
+            AND u.userName like concat('%', #{ew.userName}, '%')
+        </if>
+        <if test="ew.phonenumber != null and ew.phonenumber != ''">
+            AND u.phonenumber like concat('%', #{ew.phonenumber}, '%')
+        </if>
+    </select>
+    <select id="unallocatedList" resultType="java.util.Map">
+        select
+        id, userName, nickName, userType, email, phonenumber, sex, avatar, password, status,
+        delFlag, loginIp, loginDate, createAt, createTime, updateAt, updateTime
+        from sys_user u
+        where u.delFlag = '0'
+          and id not in (select distinct ur.userId from sys_user_role ur where ur.roleId = #{ew.roleId})
+        <if test="ew.userName != null and ew.userName != ''">
+            AND u.userName like concat('%', #{ew.userName}, '%')
+        </if>
+        <if test="ew.phonenumber != null and ew.phonenumber != ''">
+            AND u.phonenumber like concat('%', #{ew.phonenumber}, '%')
+        </if>
     </select>
 </mapper>

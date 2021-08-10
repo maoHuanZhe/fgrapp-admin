@@ -45,9 +45,9 @@ export function dataScope(data) {
 }
 
 // 角色状态修改
-export function changeRoleStatus(roleId, status) {
+export function changeRoleStatus(id, status) {
   const data = {
-    roleId,
+    id,
     status
   }
   return request({
@@ -104,17 +104,15 @@ export function authUserCancel(data) {
 // 批量取消用户授权角色
 export function authUserCancelAll(data) {
   return request({
-    url: '/system/role/authUser/cancelAll',
-    method: 'put',
-    params: data
+    url: '/system/role/authUser/'+data.roleId+"/"+data.userIds,
+    method: 'delete'
   })
 }
 
 // 授权用户选择
 export function authUserSelectAll(data) {
   return request({
-    url: '/system/role/authUser/selectAll',
+    url: '/system/role/authUser/'+data.roleId+"/"+data.userIds,
     method: 'put',
-    params: data
   })
 }

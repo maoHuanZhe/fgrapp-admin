@@ -137,7 +137,7 @@ export default {
   created() {
     const roleId = this.$route.params && this.$route.params.roleId;
     if (roleId) {
-      this.queryParams.roleId = roleId;
+      this.queryParams.roleId = parseInt(roleId);
       this.getList();
       this.getDicts("sys_normal_disable").then(response => {
         this.statusOptions = response.data;
@@ -149,8 +149,8 @@ export default {
     getList() {
       this.loading = true;
       allocatedUserList(this.queryParams).then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
+          this.userList = response.data.records;
+          this.total = response.data.total;
           this.loading = false;
         }
       );
@@ -172,7 +172,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.userIds = selection.map(item => item.userId)
+      this.userIds = selection.map(item => item.id)
       this.multiple = !selection.length
     },
     /** 打开授权用户表弹窗 */
@@ -187,7 +187,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(function() {
-        return authUserCancel({ userId: row.userId, roleId: roleId });
+        return authUserCancel({ userId: row.id, roleId: roleId });
       }).then(() => {
         this.getList();
         this.msgSuccess("取消授权成功");

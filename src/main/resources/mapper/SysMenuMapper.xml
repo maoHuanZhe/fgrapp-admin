@@ -65,4 +65,14 @@
     <select id="checkMenuExistRole" resultType="java.lang.Integer">
         select count(menuId) from sys_role_menu where menuId = #{menuId}
     </select>
+    <select id="selectMenuListByRoleId" resultType="java.lang.Integer">
+        select m.id
+        from sys_menu m
+        left join sys_role_menu rm on m.id = rm.menuId
+        where rm.roleId = #{roleId}
+        <if test="menuCheckStrictly">
+            and m.id not in (select m.parentId from sys_menu m inner join sys_role_menu rm on m.id = rm.menuId and rm.roleId = #{roleId})
+        </if>
+        order by m.parentId, m.orderNum
+    </select>
 </mapper>

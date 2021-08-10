@@ -5,12 +5,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fgrapp.admin.dao.SysRoleMapper;
+import com.fgrapp.admin.dao.SysUserMapper;
 import com.fgrapp.admin.domain.SysRoleDo;
 import com.fgrapp.admin.domain.SysRoleMenu;
+import com.fgrapp.admin.domain.SysUserDo;
+import com.fgrapp.admin.domain.SysUserRole;
 import com.fgrapp.base.exception.ResultException;
 import com.fgrapp.base.service.FgrService;
 import com.fgrapp.base.utils.FgrUtil;
 import com.fgrapp.base.utils.PageUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SysRoleService extends FgrService<SysRoleMapper, SysRoleDo> {
+    @Autowired
+    private SysUserMapper userMapper;
     public Set<String> selectRolePermissionByUserId(Long userId)
     {
         List<SysRoleDo> perms = baseMapper.selectRolePermissionByUserId(userId);
@@ -121,5 +127,36 @@ public class SysRoleService extends FgrService<SysRoleMapper, SysRoleDo> {
         //删除角色与菜单关联
         baseMapper.deleteRoleMenu(roleIds);
         return baseMapper.deleteBatchIds(roleIds);
+    }
+
+    public int changeStatus(SysRoleDo info) {
+        if (info.isAdmin()) {
+            throw new ResultException("不允许操作超级管理员角色");
+        }
+        return baseMapper.updateById(info);
+    }
+
+    public IPage<List<Map<String, Object>>> allocatedList(Map<String, Object> map) {
+        return baseMapper.allocatedList(PageUtil.getParamPage(map, SysUserDo.class),map);
+    }
+
+    public IPage<List<Map<String, Object>>> unallocatedList(Map<String, Object> map) {
+        return baseMapper.unallocatedList(PageUtil.getParamPage(map, SysUserDo.class),map);
+    }
+
+    public int cancelAuthUser(SysUserRole userRole) {
+        return baseMapper.deleteUserRoleInfo(userRole);
+    }
+
+    public int cancelAuthUserAll(Long roleId, List<Long> userIds) {
+        return baseMapper.cancelAuthUserAll(roleId,userIds);
+    }
+
+    public void selectAuthUserAll(Long roleId, List<Long> userIds) {
+        List<SysUserRole> list = new ArrayList<>();
+        for (Long userId : userIds) {
+            list.add(new SysUserRole(userId,roleId));
+        }
+        userMapper.insertUserRoleList(list);
     }
 }

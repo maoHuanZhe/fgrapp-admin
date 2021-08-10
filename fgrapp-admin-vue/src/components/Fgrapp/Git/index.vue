@@ -9,7 +9,7 @@ export default {
   name: 'git',
   data() {
     return {
-      url: 'https://gitee.com/y_project/ruoyi-vue'
+      url: 'https://github.com/maoHuanZhe/fgrapp-admin'
     }
   },
   methods: {

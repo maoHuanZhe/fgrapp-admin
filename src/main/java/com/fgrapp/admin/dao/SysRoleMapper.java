@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fgrapp.admin.domain.SysRoleDo;
 import com.fgrapp.admin.domain.SysRoleMenu;
+import com.fgrapp.admin.domain.SysUserDo;
+import com.fgrapp.admin.domain.SysUserRole;
 import com.fgrapp.base.dao.FgrMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -34,4 +36,12 @@ public interface SysRoleMapper extends FgrMapper<SysRoleDo> {
     void deleteRoleMenuByRoleId(Long id);
 
     void deleteRoleMenu(List<Long> roleIds);
+
+    IPage<List<Map<String, Object>>> allocatedList(Page<SysUserDo> paramPage, @Param(Constants.WRAPPER) Map<String, Object> map);
+
+    IPage<List<Map<String, Object>>> unallocatedList(Page<SysUserDo> paramPage, @Param(Constants.WRAPPER) Map<String, Object> map);
+
+    int deleteUserRoleInfo(SysUserRole userRole);
+
+    int cancelAuthUserAll(@Param("roleId") Long roleId, @Param("userIds") List<Long> userIds);
 }

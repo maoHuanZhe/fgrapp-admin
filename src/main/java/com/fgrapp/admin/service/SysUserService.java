@@ -75,6 +75,9 @@ public class SysUserService extends FgrService<SysUserMapper, SysUserDo> {
         List<SysUserRole> list = getSysUserRoles(user);
         //新增用户与角色关联
         baseMapper.insertUserRoleList(list);
+        if (list.size() > 0){
+            baseMapper.insertUserRoleList(list);
+        }
     }
 
     public List<SysUserRole> getSysUserRoles(SysUserDo user) {
@@ -119,7 +122,9 @@ public class SysUserService extends FgrService<SysUserMapper, SysUserDo> {
         baseMapper.deleteUserRoleList(user.getId());
         //新增用户与角色关联
         List<SysUserRole> list = getSysUserRoles(user);
-        baseMapper.insertUserRoleList(list);
+        if (list.size() > 0){
+            baseMapper.insertUserRoleList(list);
+        }
         return user;
     }
 

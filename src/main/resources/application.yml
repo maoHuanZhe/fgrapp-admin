@@ -94,17 +94,19 @@ fgr:
     pathMapping: /
     title: FGRAPP-Admin接口文档
     description: FGRAPP-Admin接口文档-简介
-    termsOfServiceUrl: http://localhost
+    termsOfServiceUrl: http://${fgr.ip}:${server.port}
     name: fanguangrui
-    url: http://localhost
+    url: ${fgr.swagger.termsOfServiceUrl}
     email: 898365387@qq.com
     license: MIT
     licenseUrl: www.fgrapp.com
-    version: 1.0
+    version: 1.0-SNAPSHOT
   # 名称
   name: FGRAPP
-  # 版本
-  version: 1.0.0
+  # ip
+  ip: 47.98.228.27
+  # GitHub
+  gtihub: https://github.com/maoHuanZhe/fgrapp-admin
   # 版权年份
   copyrightYear: 2021
   # 实例演示开关
