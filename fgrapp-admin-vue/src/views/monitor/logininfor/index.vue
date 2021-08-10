@@ -155,7 +155,7 @@ export default {
   },
   created() {
     this.getList();
-    this.getDicts("sys_common_status").then(response => {
+    this.getDicts(10).then(response => {
       this.statusOptions = response.data;
     });
   },

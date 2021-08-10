@@ -234,10 +234,10 @@ export default {
   },
   created() {
     this.getList();
-    this.getDicts("sys_oper_type").then(response => {
+    this.getDicts(9).then(response => {
       this.typeOptions = response.data;
     });
-    this.getDicts("sys_common_status").then(response => {
+    this.getDicts(10).then(response => {
       this.statusOptions = response.data;
     });
   },

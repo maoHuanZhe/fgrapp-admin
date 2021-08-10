@@ -1,6 +1,5 @@
-package com.fgrapp.base.exception;
+package com.fgrapp.base.result.exception;
 
-import com.fgrapp.base.result.Result;
 import com.fgrapp.base.result.ResultStatus;
 import lombok.Getter;
 

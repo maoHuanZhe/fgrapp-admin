@@ -11,7 +11,7 @@ import com.fgrapp.admin.domain.vo.RouterVo;
 import com.fgrapp.admin.domain.vo.TreeSelectVo;
 import com.fgrapp.base.constant.Constants;
 import com.fgrapp.base.constant.UserConstants;
-import com.fgrapp.base.exception.ResultException;
+import com.fgrapp.base.result.exception.ResultException;
 import com.fgrapp.base.service.FgrService;
 import com.fgrapp.base.utils.FgrUtil;
 import org.apache.commons.lang3.StringUtils;

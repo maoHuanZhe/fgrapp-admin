@@ -2,7 +2,7 @@ package com.fgrapp.base.result.advice;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.SaTokenException;
-import com.fgrapp.base.exception.ResultException;
+import com.fgrapp.base.result.exception.ResultException;
 import com.fgrapp.base.result.ResponseResultBody;
 import com.fgrapp.base.result.Result;
 import com.fgrapp.base.result.ResultStatus;
@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -84,6 +85,16 @@ public class ResponseResultBodyAdvice implements ResponseBodyAdvice<Object> {
         HttpHeaders headers = new HttpHeaders();
         Result<?> body = Result.failure(ResultStatus.AUTH_ERROR,ex.getMessage());
         return this.handleExceptionInternal(ex, body, headers,  HttpStatus.OK, request);
+    }
+    /**
+     * 方法参数校验
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public final ResponseEntity<Result<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest request) {
+        log.error("handleMethodArgumentNotValidException: {}", e.getBindingResult().getFieldError().getDefaultMessage());
+        HttpHeaders headers = new HttpHeaders();
+        Result<?> body = Result.failure(ResultStatus.PARAMS_ERROR,e.getBindingResult().getFieldError().getDefaultMessage());
+        return this.handleExceptionInternal(e, body, headers,  HttpStatus.OK, request);
     }
     /**
      * 提供对标准Spring MVC异常的处理

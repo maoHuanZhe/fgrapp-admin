@@ -139,7 +139,7 @@ export default {
     if (roleId) {
       this.queryParams.roleId = parseInt(roleId);
       this.getList();
-      this.getDicts("sys_normal_disable").then(response => {
+      this.getDicts(3).then(response => {
         this.statusOptions = response.data;
       });
     }

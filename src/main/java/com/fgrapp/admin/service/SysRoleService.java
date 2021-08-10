@@ -10,7 +10,7 @@ import com.fgrapp.admin.domain.SysRoleDo;
 import com.fgrapp.admin.domain.SysRoleMenu;
 import com.fgrapp.admin.domain.SysUserDo;
 import com.fgrapp.admin.domain.SysUserRole;
-import com.fgrapp.base.exception.ResultException;
+import com.fgrapp.base.result.exception.ResultException;
 import com.fgrapp.base.service.FgrService;
 import com.fgrapp.base.utils.FgrUtil;
 import com.fgrapp.base.utils.PageUtil;
@@ -70,7 +70,9 @@ public class SysRoleService extends FgrService<SysRoleMapper, SysRoleDo> {
         baseMapper.insert(info);
         //添加角色菜单管理
         List<SysRoleMenu> list = getSysRoleMenus(info);
-        baseMapper.insetRoleMenuList(list);
+        if (list.size() > 0){
+            baseMapper.insetRoleMenuList(list);
+        }
     }
 
     private List<SysRoleMenu> getSysRoleMenus(SysRoleDo info) {
@@ -110,7 +112,9 @@ public class SysRoleService extends FgrService<SysRoleMapper, SysRoleDo> {
         baseMapper.deleteRoleMenuByRoleId(info.getId());
         //添加角色菜单关联
         List<SysRoleMenu> list = getSysRoleMenus(info);
-        baseMapper.insetRoleMenuList(list);
+        if (list.size() > 0){
+            baseMapper.insetRoleMenuList(list);
+        }
         return info;
     }
 

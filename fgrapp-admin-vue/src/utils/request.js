@@ -75,6 +75,13 @@ service.interceptors.response.use(res => {
         type: 'error'
       })
       return Promise.reject(new Error(msg))
+    } else if (code === 403) {
+      //参数校验出错
+      Message({
+        message: res.data.data,
+        type: 'error'
+      })
+      return Promise.reject(new Error(msg))
     } else if (code !== 200) {
       Notification.error({
         title: msg

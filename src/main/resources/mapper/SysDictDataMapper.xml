@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.admin.dao.SysDictDataMapper">
+    <select id="getPage" resultType="java.util.Map">
+        select id, dictSort, dictLabel, dictValue, dictType, cssClass, listClass,
+               isDefault, status, createAt, createTime, updateAt, updateTime
+        from sys_dict_data
+        <where>
+            <if test="ew.dictType != null and ew.dictType != ''">
+                AND dictType = #{ew.dictType}
+            </if>
+            <if test="ew.dictLabel != null and ew.dictLabel != ''">
+                AND dictLabel like concat('%', #{ew.dictLabel}, '%')
+            </if>
+            <if test="ew.status != null and ew.status != ''">
+                AND status = #{ew.status}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -38,9 +39,8 @@ public class SysDictDataDo extends BaseDo {
     private String dictValue;
 
     @ApiModelProperty(value = "字典类型")
-    @NotBlank(message = "字典类型不能为空")
-    @Size(max = 100, message = "字典类型长度不能超过100个字符")
-    private String dictType;
+    @NotNull(message = "字典类型不能为空")
+    private Long dictType;
 
     @ApiModelProperty(value = "样式属性（其他样式扩展）")
     @Size(max = 100, message = "样式属性长度不能超过100个字符")

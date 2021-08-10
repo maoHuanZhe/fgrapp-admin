@@ -8,7 +8,7 @@ import com.fgrapp.admin.dao.SysUserMapper;
 import com.fgrapp.admin.domain.SysRoleDo;
 import com.fgrapp.admin.domain.SysUserDo;
 import com.fgrapp.admin.domain.SysUserRole;
-import com.fgrapp.base.exception.ResultException;
+import com.fgrapp.base.result.exception.ResultException;
 import com.fgrapp.base.service.FgrService;
 import com.fgrapp.base.utils.FgrUtil;
 import com.fgrapp.base.utils.PageUtil;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,7 +73,6 @@ public class SysUserService extends FgrService<SysUserMapper, SysUserDo> {
         baseMapper.insert(user);
         List<SysUserRole> list = getSysUserRoles(user);
         //新增用户与角色关联
-        baseMapper.insertUserRoleList(list);
         if (list.size() > 0){
             baseMapper.insertUserRoleList(list);
         }

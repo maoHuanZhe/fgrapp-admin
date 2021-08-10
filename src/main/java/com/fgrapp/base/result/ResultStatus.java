@@ -18,6 +18,7 @@ public enum ResultStatus {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, 400, "Bad Request"),
     NOT_LOGIN(HttpStatus.UNAUTHORIZED, 401, "Not Login"),
     AUTH_ERROR(HttpStatus.UNAUTHORIZED, 402, "AUTH ERROR"),
+    PARAMS_ERROR(HttpStatus.UNAUTHORIZED, 403, "PARAMS ERROR"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Internal Server Error"),;
 
     /**
