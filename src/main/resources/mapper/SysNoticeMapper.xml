@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.admin.dao.SysNoticeMapper">
+    <select id="getPage" resultType="java.util.Map">
+        select
+            id, noticeTitle, noticeType, noticeContent, status, createAt, createTime, updateAt, updateTime
+        from sys_notice
+        <where>
+            <if test="ew.noticeTitle != null and ew.noticeTitle != ''">
+                AND noticeTitle like concat('%', #{ew.noticeTitle}, '%')
+            </if>
+            <if test="ew.noticeType != null and ew.noticeType != ''">
+                AND noticeType = #{ew.noticeType}
+            </if>
+            <if test="ew.createAt != null and ew.createAt != ''">
+                AND createAt like concat('%', #{ew.createAt}, '%')
+            </if>
+        </where>
+    </select>
+</mapper>

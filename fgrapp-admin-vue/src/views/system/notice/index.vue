@@ -10,9 +10,9 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="操作人员" prop="createBy">
+      <el-form-item label="操作人员" prop="createAt">
         <el-input
-          v-model="queryParams.createBy"
+          v-model="queryParams.createAt"
           placeholder="请输入操作人员"
           clearable
           size="small"
@@ -73,7 +73,7 @@
 
     <el-table v-loading="loading" :data="noticeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="序号" align="center" prop="noticeId" width="100" />
+      <el-table-column label="序号" align="center" prop="id" width="100" />
       <el-table-column
         label="公告标题"
         align="center"
@@ -94,7 +94,7 @@
         :formatter="statusFormat"
         width="100"
       />
-      <el-table-column label="创建者" align="center" prop="createBy" width="100" />
+      <el-table-column label="创建者" align="center" prop="createAt" width="100" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="100">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -209,7 +209,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         noticeTitle: undefined,
-        createBy: undefined,
+        createAt: undefined,
         status: undefined
       },
       // 表单参数
@@ -227,10 +227,10 @@ export default {
   },
   created() {
     this.getList();
-    this.getDicts("sys_notice_status").then(response => {
+    this.getDicts(8).then(response => {
       this.statusOptions = response.data;
     });
-    this.getDicts("sys_notice_type").then(response => {
+    this.getDicts(7).then(response => {
       this.typeOptions = response.data;
     });
   },
@@ -239,17 +239,17 @@ export default {
     getList() {
       this.loading = true;
       listNotice(this.queryParams).then(response => {
-        this.noticeList = response.rows;
-        this.total = response.total;
+        this.noticeList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
     // 公告状态字典翻译
-    statusFormat(row, column) {
+    statusFormat(row) {
       return this.selectDictLabel(this.statusOptions, row.status);
     },
     // 公告状态字典翻译
-    typeFormat(row, column) {
+    typeFormat(row) {
       return this.selectDictLabel(this.typeOptions, row.noticeType);
     },
     // 取消按钮
@@ -260,7 +260,7 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        noticeId: undefined,
+        id: undefined,
         noticeTitle: undefined,
         noticeType: undefined,
         noticeContent: undefined,
@@ -280,8 +280,8 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.noticeId)
-      this.single = selection.length!=1
+      this.ids = selection.map(item => item.id)
+      this.single = selection.length!==1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -293,8 +293,8 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const noticeId = row.noticeId || this.ids
-      getNotice(noticeId).then(response => {
+      const id = row.id || this.ids
+      getNotice(id).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改公告";
@@ -304,14 +304,14 @@ export default {
     submitForm: function() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.noticeId != undefined) {
-            updateNotice(this.form).then(response => {
+          if (this.form.id !== undefined) {
+            updateNotice(this.form).then(() => {
               this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addNotice(this.form).then(response => {
+            addNotice(this.form).then(() => {
               this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -322,13 +322,13 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const noticeIds = row.noticeId || this.ids
-      this.$confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项?', "警告", {
+      const ids = row.id || this.ids
+      this.$confirm('是否确认删除公告编号为"' + ids + '"的数据项?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delNotice(noticeIds);
+          return delNotice(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
