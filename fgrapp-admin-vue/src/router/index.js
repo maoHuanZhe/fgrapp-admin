@@ -5,6 +5,8 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+/* BlogLayout */
+import BlogLayout from '@/layout/BlogLayout'
 
 /**
  * Note: 路由配置项
@@ -79,6 +81,32 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/func/blog',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'edit/:blogId(\\d+)',
+        component: (resolve) => require(['@/views/func/blog/add/index'], resolve),
+        name: 'EditBlog',
+        meta: { title: '修改文章'}
+      }
+    ]
+  },
+  // {
+  //   path: '/blog',
+  //   component: BlogLayout,
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'detail/:blogId(\\d+)',
+  //       component: (resolve) => require(['@/views/func/blog/detail'], resolve),
+  //       name: 'EditBlog',
+  //       meta: { title: '查看文章'}
+  //     }
+  //   ]
+  // },
   {
     path: '/auth',
     component: Layout,

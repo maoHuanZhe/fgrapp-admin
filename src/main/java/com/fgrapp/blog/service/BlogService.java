@@ -1,9 +1,14 @@
 package com.fgrapp.blog.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fgrapp.base.service.FgrService;
+import com.fgrapp.base.utils.PageUtil;
 import com.fgrapp.blog.dao.BlogMapper;
 import com.fgrapp.blog.domain.BlogDo;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * BlogService
@@ -13,4 +18,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class BlogService extends FgrService<BlogMapper, BlogDo> {
+    public IPage<List<Map<String, Object>>> getPage(Map<String, Object> map) {
+        return baseMapper.getPage(PageUtil.getParamPage(map,BlogDo.class),map);
+    }
 }

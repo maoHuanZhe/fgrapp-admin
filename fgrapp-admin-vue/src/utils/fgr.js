@@ -56,7 +56,7 @@ export function resetForm(refName) {
 // 添加日期范围
 export function addDateRange(params, dateRange, propName) {
 	var search = params;
-	if (null != dateRange && '' != dateRange) {
+	if (null != dateRange && '' !== dateRange) {
 		if (typeof (propName) === "undefined") {
 			search["beginTime"] = dateRange[0];
 			search["endTime"] = dateRange[1];
@@ -64,7 +64,15 @@ export function addDateRange(params, dateRange, propName) {
 			search["begin" + propName] = dateRange[0];
 			search["end" + propName] = dateRange[1];
 		}
-	}
+	} else {
+    if (typeof (propName) === "undefined") {
+      search["beginTime"] = "";
+      search["endTime"] = "";
+    } else {
+      search["begin" + propName] = "";
+      search["end" + propName] = "";
+    }
+  }
 	return search;
 }
 
@@ -72,7 +80,7 @@ export function addDateRange(params, dateRange, propName) {
 export function selectDictLabel(datas, value) {
 	var actions = [];
 	Object.keys(datas).some((key) => {
-		if (datas[key].dictValue == ('' + value)) {
+		if (datas[key].dictValue === ('' + value)) {
 			actions.push(datas[key].dictLabel);
 			return true;
 		}

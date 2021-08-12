@@ -8,6 +8,7 @@
       maxlength="100"
       show-word-limit
     >
+      <el-button slot="append" :loading="loading" @click="save">发布文章</el-button>
     </el-input>
       <mavon-editor
         :toolbars="markdownOption"
@@ -28,10 +29,11 @@
   </div>
 </template>
 <script>
-  import {add} from "@/api/func/blog";
+  import { add, getInfo, update } from "@/api/func/blog";
   export default {
     data() {
       return {
+        loading: false,
         form:{
           content:"",
           title:"",
@@ -74,6 +76,12 @@
         }
       };
     },
+    created(){
+      const id = this.$route.params && this.$route.params.blogId;
+      getInfo(id).then(({data}) => {
+        this.form = data;
+      })
+    },
     methods:{
       //编辑区发生变化的回调事件(render: value 经过markdown解析后的结果)
       change(value,render){
@@ -82,6 +90,9 @@
       },
       //ctrl + s 的回调事件(保存按键,同样触发该回调)
       save(value,render){
+        if (this.loading){
+          return;
+        }
         //判断是否输入标题
         if (!this.form.title){
           return this.$message({
@@ -89,17 +100,28 @@
             type: 'warning'
           });
         }
-        add({
-          title:this.form.title,
-          imgUrl:this.form.imgUrl,
-          content:render
-        }).then(response => {
-          this.msgSuccess("新增成功");
+        this.loading = true;
+        var result;
+        if (this.form.id){
+          result = update(this.form)
+        } else {
+          result = add(this.form)
+        }
+        result.then(() => {
+          this.loading = false;
+          this.msgSuccess("保存成功");
+          if (this.form.id){
+            //关闭当前页面
+            this.$store.dispatch("tagsView/delView", this.$route);
+            this.$router.push({ path: "/func/blog/list" });
+          }
           this.form = {
             content:"",
             title:"",
             imgUrl:""
           }
+        }).catch(()=>{
+          this.loading = false;
         });
       },
       //切换全屏编辑的回调事件(boolean: 全屏开启状态)

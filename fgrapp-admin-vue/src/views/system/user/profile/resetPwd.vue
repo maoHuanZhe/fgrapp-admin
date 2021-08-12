@@ -18,12 +18,20 @@
 
 <script>
 import { updateUserPwd } from "@/api/system/user";
+import {encrypt} from "@/utils/jsencrypt";
 
 export default {
   data() {
     const equalToPassword = (rule, value, callback) => {
       if (this.user.newPassword !== value) {
         callback(new Error("两次输入的密码不一致"));
+      } else {
+        callback();
+      }
+    };
+    const unEqualToPassword = (rule, value, callback) => {
+      if (this.user.oldPassword === value) {
+        callback(new Error("新密码不能与旧密码相同"));
       } else {
         callback();
       }
@@ -42,6 +50,7 @@ export default {
         ],
         newPassword: [
           { required: true, message: "新密码不能为空", trigger: "blur" },
+          { required: true, validator: unEqualToPassword, trigger: "blur" },
           { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" }
         ],
         confirmPassword: [
@@ -55,8 +64,8 @@ export default {
     submit() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          updateUserPwd(this.user.oldPassword, this.user.newPassword).then(
-            response => {
+          updateUserPwd(encrypt(this.user.oldPassword), encrypt(this.user.newPassword)).then(
+            () => {
               this.msgSuccess("修改成功");
             }
           );
