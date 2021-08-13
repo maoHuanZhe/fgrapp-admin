@@ -8,7 +8,7 @@
       maxlength="100"
       show-word-limit
     >
-      <el-button slot="append" :loading="loading" @click="save">发布文章</el-button>
+      <el-button slot="append" @click="save">发布文章</el-button>
     </el-input>
       <mavon-editor
         :toolbars="markdownOption"
@@ -26,18 +26,80 @@
         @imgDel="imgDel"
         :ishljs = "true"
       />
+
+    <!-- 添加或修改参数配置对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+      <el-form ref="form" :rules="rules" :model="form" label-width="80px">
+        <el-form-item label="分类专栏" prop="class">
+          <el-tag
+            :key="tag"
+            v-for="tag in classNames"
+            closable
+            :disable-transitions="false"
+            @close="handleClose(tag)">
+            {{tag}}
+          </el-tag>
+          <el-input
+            v-if="inputVisible"
+            v-model="inputValue"
+            ref="saveTagInput"
+            size="small"
+            class="input-new-tag"
+            @keyup.enter.native="handleInputConfirm"
+            @blur="handleInputConfirm"
+          >
+          </el-input>
+          <el-tag style="margin-left: 10px;" @click="showInput">+ 新建分类专栏</el-tag>
+          <div style="height: 100px;border-radius: 4px;border: 1px solid #e8e8ee;padding: 0 10px;">
+            <el-checkbox-group v-model="classNames">
+              <el-checkbox v-for="item in classList" :label="item.name" :key="item.id"></el-checkbox>
+            </el-checkbox-group>
+          </div>
+        </el-form-item>
+        <el-form-item label="文章类型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择" clearable size="small">
+            <el-option
+              v-for="dict in typeOption"
+              :key="dict.dictValue"
+              :label="dict.dictLabel"
+              :value="dict.dictValue"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submit">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
   import { add, getInfo, update } from "@/api/func/blog";
+  import { list } from "@/api/func/class";
   export default {
     data() {
       return {
-        loading: false,
+        inputVisible: false,
+        inputValue: '',
+        title: "",
+        open: false,
+        typeOption:[],
+        classNames:[],
+        classList:[],
+        classMap:{},
         form:{
           content:"",
           title:"",
-          imgUrl:""
+          type:"",
+          imgUrl:"",
+          classIds:[]
+        },
+        rules: {
+            type: [
+            { required: true, message: '请选择文章类型', trigger: 'change' }
+          ],
         },
         markdownOption: {
           bold: true, // 粗体
@@ -78,11 +140,39 @@
     },
     created(){
       const id = this.$route.params && this.$route.params.blogId;
-      getInfo(id).then(({data}) => {
-        this.form = data;
-      })
+      if (id) {
+        getInfo(id).then(({data}) => {
+          this.form = data;
+          this.form.type = data.type + "";
+          this.classNames = data.addClassNames;
+        })
+      }
     },
     methods:{
+      handleClose(tag) {
+        this.classNames.splice(this.classNames.indexOf(tag), 1);
+      },
+      showInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        });
+      },
+      handleInputConfirm() {
+        let inputValue = this.inputValue;
+        if (inputValue) {
+          //判断名称是否重复
+          if (this.classNames.indexOf(inputValue) === -1){
+            this.classNames.push(inputValue);
+          }
+        }
+        this.inputVisible = false;
+        this.inputValue = '';
+      },
+      cancel(){
+        this.title = "";
+        this.open = false;
+      },
       //编辑区发生变化的回调事件(render: value 经过markdown解析后的结果)
       change(value,render){
         console.log("change::"+value);
@@ -90,9 +180,6 @@
       },
       //ctrl + s 的回调事件(保存按键,同样触发该回调)
       save(value,render){
-        if (this.loading){
-          return;
-        }
         //判断是否输入标题
         if (!this.form.title){
           return this.$message({
@@ -100,28 +187,68 @@
             type: 'warning'
           });
         }
-        this.loading = true;
-        var result;
-        if (this.form.id){
-          result = update(this.form)
-        } else {
-          result = add(this.form)
+        if (!this.classList.length){
+          list().then(({data})=>{
+            this.classList = data;
+            data.forEach(item =>{
+              this.classMap[item.name] = item.id;
+            })
+          })
         }
-        result.then(() => {
-          this.loading = false;
-          this.msgSuccess("保存成功");
-          if (this.form.id){
-            //关闭当前页面
-            this.$store.dispatch("tagsView/delView", this.$route);
-            this.$router.push({ path: "/func/blog/list" });
+        if (!this.typeOption.length){
+          this.getDicts(107).then(response => {
+            this.typeOption = response.data;
+          });
+        }
+        this.title = "发布文章";
+        this.open = true;
+      },
+      getClassIds(){
+        //获取博客分类 分为已存在的和要创建的两种
+        let classIds = [];
+        let addClassNames = [];
+        this.classNames.forEach(item =>{
+          let classId = this.classMap[item];
+          if (classId){
+            //已存在
+            classIds.push(classId)
+          } else {
+            //要新建的分类名称
+            addClassNames.push(item);
           }
-          this.form = {
-            content:"",
-            title:"",
-            imgUrl:""
+        })
+        this.form.classIds = classIds;
+        this.form.addClassNames = addClassNames;
+      },
+      submit(){
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.getClassIds()
+            let result;
+            if (this.form.id){
+              result = update(this.form)
+            } else {
+              result = add(this.form)
+            }
+            result.then(() => {
+              this.cancel();
+              this.msgSuccess("保存成功");
+              if (this.form.id){
+                //关闭当前页面
+                this.$store.dispatch("tagsView/delView", this.$route);
+                this.$router.push({ path: "/func/blog/list" });
+              }
+              this.form = {
+                content:"",
+                title:"",
+                type:"",
+                imgUrl:"",
+                classIds:[]
+              }
+            }).catch(()=>{
+              this.cancel();
+            });
           }
-        }).catch(()=>{
-          this.loading = false;
         });
       },
       //切换全屏编辑的回调事件(boolean: 全屏开启状态)
@@ -192,5 +319,13 @@
   .mavonEditor {
     width: 100%;
     height: 100%;
+  }
+  .el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
   }
 </style>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.blog.dao.ClassMapper">
+    <select id="getPage" resultType="java.util.Map">
+        select
+            id, name, createAt, createTime, updateAt, updateTime
+        from func_class
+        <where>
+            <if test="ew.createAt != null and ew.createAt != ''">
+                and createAt = ${ew.createAt}
+            </if>
+            <if test="ew.name != null and ew.name != ''">
+                and name like concat('%', #{ew.name}, '%')
+            </if>
+            <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(createTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+            </if>
+            <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    <select id="getListByBlogId" resultType="com.fgrapp.blog.domain.ClassDo">
+        select
+        id, name, createAt, createTime, updateAt, updateTime
+        from func_class as fc
+        left join func_blog_class as fbc
+        on fc.id = fbc.classId
+        where fbc.blogId = #{id}
+    </select>
+</mapper>

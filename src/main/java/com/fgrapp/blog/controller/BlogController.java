@@ -10,7 +10,6 @@ import com.fgrapp.blog.domain.BlogDo;
 import com.fgrapp.blog.service.BlogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -52,14 +51,14 @@ public class BlogController extends FgrController {
     @ApiOperation("根据编号获取博客详细信息")
     @Cacheable(unless = "#result == null")
     public BlogDo getInfo(@PathVariable Long id){
-        return service.getById(id);
+        return service.getInfo(id);
     }
     @PostMapping
     @ApiOperation("新增博客")
     @SaCheckPermission("func:blog:add")
     @Log(title = "博客信息", businessType = BusinessType.INSERT)
-    public boolean save(@Validated @RequestBody BlogDo info){
-        return service.save(info);
+    public void save(@Validated @RequestBody BlogDo info){
+        service.add(info);
     }
 
     @PutMapping
@@ -68,8 +67,7 @@ public class BlogController extends FgrController {
     @CachePut(key = "#info.id")
     @Log(title = "博客信息", businessType = BusinessType.UPDATE)
     public BlogDo updeate(@Validated @RequestBody BlogDo info){
-        service.updateById(info);
-        return info;
+        return service.updeate(info);
     }
 
     @DeleteMapping("/{id}")

@@ -2,6 +2,7 @@ package com.fgrapp.base.utils;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fgrapp.admin.domain.SysUserDo;
 import io.micrometer.core.instrument.util.StringUtils;
 
 import java.util.Map;
@@ -36,5 +37,23 @@ public class PageUtil {
             page.addOrder(OrderItem.desc("id"));
         }
         return page;
+    }
+
+    /**
+     * 根据当前登陆人进行搜索
+     * @param map
+     * @param responseType
+     * @param <T>
+     * @return
+     */
+    public static  <T> Page<T> getParamPageAddUserName(Map<String,Object> map, Class<T> responseType){
+
+        //获取当前登陆人
+        SysUserDo sysUserDo = FgrUtil.getSysUserDo();
+        //判断是否是超级管理员角色
+        if (!FgrUtil.isAdmin(sysUserDo)){
+            map.put("createAt",sysUserDo.getUserName());
+        }
+        return getParamPage(map,responseType);
     }
 }

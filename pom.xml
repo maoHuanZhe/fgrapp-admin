@@ -26,6 +26,12 @@
         <mysql-connector.version>5.1.47</mysql-connector.version>
     </properties>
     <dependencies>
+        <!--markdown转html-->
+        <dependency>
+            <groupId>org.pegdown</groupId>
+            <artifactId>pegdown</artifactId>
+            <version>1.6.0</version>
+        </dependency>
         <!-- 获取系统信息 -->
         <dependency>
             <groupId>com.github.oshi</groupId>

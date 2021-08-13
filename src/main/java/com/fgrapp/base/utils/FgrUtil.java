@@ -264,4 +264,19 @@ public class FgrUtil {
         }
         return "NULL";
     }
+
+    /**
+     * 判断用户是否是超级管理员
+     * @param sysUserDo
+     * @return
+     */
+    public static boolean isAdmin(SysUserDo sysUserDo) {
+        Long[] roleIds = sysUserDo.getRoleIds();
+        for (Long roleId : roleIds) {
+            if ("1".equals(roleId.toString())){
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -29,8 +29,12 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SysRoleService extends FgrService<SysRoleMapper, SysRoleDo> {
-    @Autowired
-    private SysUserMapper userMapper;
+    private final SysUserMapper userMapper;
+
+    public SysRoleService(SysUserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+
     public Set<String> selectRolePermissionByUserId(Long userId)
     {
         List<SysRoleDo> perms = baseMapper.selectRolePermissionByUserId(userId);
