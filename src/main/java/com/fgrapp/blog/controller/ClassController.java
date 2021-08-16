@@ -46,7 +46,6 @@ public class ClassController extends FgrController {
     }
 
     @GetMapping("list")
-    @SaCheckPermission("func:class:list")
     @ApiOperation("获取全部博客分类列表数据")
     public List<ClassDo> list(){
         return service.list();

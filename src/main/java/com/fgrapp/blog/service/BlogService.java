@@ -1,21 +1,24 @@
 package com.fgrapp.blog.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fgrapp.base.service.FgrService;
+import com.fgrapp.base.utils.FgrUtil;
 import com.fgrapp.base.utils.PageUtil;
-import com.fgrapp.blog.dao.BlogClassMapper;
-import com.fgrapp.blog.dao.BlogMapper;
-import com.fgrapp.blog.dao.ClassMapper;
-import com.fgrapp.blog.domain.BlogClassDo;
-import com.fgrapp.blog.domain.BlogDo;
-import com.fgrapp.blog.domain.ClassDo;
+import com.fgrapp.blog.dao.*;
+import com.fgrapp.blog.domain.*;
+import com.fgrapp.blog.util.MDToText;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,10 +34,16 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
 
     private final ClassMapper classMapper;
     private final BlogClassMapper blogClassMapper;
+    private final BlogOperateNumMapper operateNumMapper;
+    private CommentMapper commentMapper;
+    private final BlogUserMapper blogUserMapper;
 
-    public BlogService(ClassMapper classMapper, BlogClassMapper blogClassMapper) {
+    public BlogService(ClassMapper classMapper, BlogClassMapper blogClassMapper, BlogOperateNumMapper operateNumMapper, CommentMapper commentMapper, BlogUserMapper blogUserMapper) {
         this.classMapper = classMapper;
         this.blogClassMapper = blogClassMapper;
+        this.operateNumMapper = operateNumMapper;
+        this.blogUserMapper = blogUserMapper;
+        this.commentMapper = commentMapper;
     }
 
     public IPage<List<Map<String, Object>>> getPage(Map<String, Object> map) {
@@ -43,9 +52,15 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
 
     @Transactional(rollbackFor = Exception.class)
     public void add(BlogDo info) {
+        //获取博客摘要
+        String summary = MDToText.mdToText(info.getContent()).substring(0, 128);
+        info.setSummary(summary);
         //新增博客
         baseMapper.insert(info);
         Long blogId = info.getId();
+        //新增博客操作数据
+        operateNumMapper.insert(BlogOperateNumDo.builder()
+                .blogId(blogId).likeNum(0L).readNum(0L).build());
         List<BlogClassDo> blogClassDos = new ArrayList<>();
         //判断是否有需要添加的分类
         List<String> addClassNames = info.getAddClassNames();
@@ -73,13 +88,13 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
     public BlogDo getInfo(Long id) {
         //获取博客基本信息
         BlogDo blogDo = baseMapper.selectById(id);
+        //获取博客分类信息
         List<String> classNames = getClassNames(id);
         blogDo.setAddClassNames(classNames);
         return blogDo;
     }
 
     private List<String> getClassNames(Long id) {
-        //获取博客分类信息
         List<ClassDo> classDoList = classMapper.getListByBlogId(id);
         List<String> classNames = new ArrayList<>();
         classDoList.forEach(item ->{
@@ -116,9 +131,69 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
             int allBatch = blogClassMapper.insertBatch(blogClassDos);
             log.info("新增{}条博客分类关联",allBatch);
         }
+        //获取博客摘要
+        String summary = MDToText.mdToText(info.getContent()).substring(0, 128);
+        info.setSummary(summary);
         baseMapper.updateById(info);
         List<String> classNames = getClassNames(blogId);
         info.setAddClassNames(classNames);
         return info;
+    }
+
+    public IPage<List<Map<String, Object>>> getBlogPage(Map<String, Object> map) {
+        return baseMapper.getBlogPage(PageUtil.getParamPage(map,BlogDo.class),map);
+    }
+
+    public void dels(Long id) {
+        baseMapper.dels(id);
+    }
+
+    public BlogOperateNumDo getOperateNum(Long id) {
+        //博客阅读数加一
+        operateNumMapper.updateReadNum(id);
+        BlogOperateNumDo blogOperateNumDo = operateNumMapper.selectById(id);
+        //判断当前用户能否点赞
+        if (!StpUtil.isLogin()){
+            //未登陆
+            blogOperateNumDo.setCanLike(true);
+        } else {
+            Long userId = FgrUtil.getUserId();
+            Integer count = blogUserMapper.selectCount(new LambdaQueryWrapper<BlogUserDo>()
+                    .eq(BlogUserDo::getBlogId, id)
+                    .eq(BlogUserDo::getUserId, userId));
+            blogOperateNumDo.setCanLike(count == 0);
+        }
+        return blogOperateNumDo;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateLickNum(Long id, int num) {
+        //点赞数量改变
+        Long userId = FgrUtil.getUserId();
+        operateNumMapper.updateLickNum(id,num);
+        if (num > 0){
+            //点赞操作
+            //添加博客与用户点赞关联
+            blogUserMapper.insert(new BlogUserDo(id,userId));
+        } else {
+            //取消点赞操作
+            //删除博客与用户点赞关联
+            blogUserMapper.delete(new LambdaUpdateWrapper<BlogUserDo>()
+            .eq(BlogUserDo::getUserId,userId)
+            .eq(BlogUserDo::getBlogId,id));
+        }
+    }
+
+    public Map<String, Object> getDetailInfo(Long id) {
+        Map<String,Object> map = new HashMap<>(3);
+        BlogDo blogDo = getInfo(id);
+        BlogOperateNumDo operateNum = getOperateNum(id);
+        List<CommentDo> commentDos = commentMapper.selectList(new LambdaQueryWrapper<CommentDo>()
+                .eq(CommentDo::getBlogId, id)
+                .eq(CommentDo::getIsAudit, 1));
+        map.put("blog",blogDo);
+        map.put("operateNum",operateNum);
+        map.put("commentDos",commentDos);
+        return map;
     }
 }

@@ -21,11 +21,11 @@
     name: "upload",
     data() {
       return {
-        action:"http://localhost:8080/file/upload",
+        action:"http://localhost:9657/func/file",
         // action:"http://192.168.0.100:7999/file/upload",
         fileList:[],
         headers:{
-          'Authorization':'Bearer ' + getToken()
+          'Admin-Token':'Bearer ' + getToken()
         },
         urls:[],
         loading:''

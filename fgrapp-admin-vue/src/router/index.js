@@ -29,6 +29,25 @@ import BlogLayout from '@/layout/BlogLayout'
 // 公共路由
 export const constantRoutes = [
   {
+    path: '/blog',
+    component: BlogLayout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        component: (resolve) => require(['@/views/blog/list'], resolve)
+      },
+      {
+        path: 'class/:classId',
+        component: (resolve) => require(['@/views/blog/list'], resolve)
+      },
+      {
+        path: 'detail/:blogId',
+        component: (resolve) => require(['@/views/blog/detail/index'], resolve)
+      }
+    ]
+  },
+  {
     path: '/redirect',
     component: Layout,
     hidden: true,
@@ -87,26 +106,19 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: 'edit/:blogId(\\d+)',
+        path: 'detail/:blogId',
+        component: (resolve) => require(['@/views/blog/detail/index'], resolve),
+        name: 'EditBlog',
+        meta: { title: '查看文章'}
+      },
+      {
+        path: 'edit/:blogId',
         component: (resolve) => require(['@/views/func/blog/add/index'], resolve),
         name: 'EditBlog',
         meta: { title: '修改文章'}
       }
     ]
   },
-  // {
-  //   path: '/blog',
-  //   component: BlogLayout,
-  //   hidden: true,
-  //   children: [
-  //     {
-  //       path: 'detail/:blogId(\\d+)',
-  //       component: (resolve) => require(['@/views/func/blog/detail'], resolve),
-  //       name: 'EditBlog',
-  //       meta: { title: '查看文章'}
-  //     }
-  //   ]
-  // },
   {
     path: '/auth',
     component: Layout,

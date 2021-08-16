@@ -46,13 +46,6 @@ public class BlogController extends FgrController {
         return service.getPage(map);
     }
 
-    @GetMapping("/{id}")
-    @SaCheckPermission("func:blog:query")
-    @ApiOperation("根据编号获取博客详细信息")
-    @Cacheable(unless = "#result == null")
-    public BlogDo getInfo(@PathVariable Long id){
-        return service.getInfo(id);
-    }
     @PostMapping
     @ApiOperation("新增博客")
     @SaCheckPermission("func:blog:add")
@@ -76,6 +69,6 @@ public class BlogController extends FgrController {
     @CacheEvict()
     @Log(title = "博客信息", businessType = BusinessType.DELETE)
     public void dels(@PathVariable Long id){
-        service.removeById(id);
+        service.dels(id);
     }
 }

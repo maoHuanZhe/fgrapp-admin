@@ -10,20 +10,11 @@
     >
       <el-button slot="append" @click="save">发布文章</el-button>
     </el-input>
-      <mavon-editor
+      <mavon-editor ref="md"
         :toolbars="markdownOption"
         v-model="form.content"
-        @change="change"
         @save="save"
-        @fullScreen="fullScreen"
-        @readModel="readModel"
-        @htmlCode="htmlCode"
-        @subfieldToggle="subfieldToggle"
-        @previewToggle="previewToggle"
-        @helpToggle="helpToggle"
-        @navigationToggle="navigationToggle"
         @imgAdd="imgAdd"
-        @imgDel="imgDel"
         :ishljs = "true"
       />
 
@@ -76,8 +67,10 @@
   </div>
 </template>
 <script>
-  import { add, getInfo, update } from "@/api/func/blog";
+  import { add, update } from "@/api/func/blog";
   import { list } from "@/api/func/class";
+  import { upload } from "@/api/func/file";
+  import { getInfo } from "@/api/blog";
   export default {
     data() {
       return {
@@ -173,11 +166,6 @@
         this.title = "";
         this.open = false;
       },
-      //编辑区发生变化的回调事件(render: value 经过markdown解析后的结果)
-      change(value,render){
-        console.log("change::"+value);
-        console.log("change::"+render);
-      },
       //ctrl + s 的回调事件(保存按键,同样触发该回调)
       save(value,render){
         //判断是否输入标题
@@ -251,66 +239,14 @@
           }
         });
       },
-      //切换全屏编辑的回调事件(boolean: 全屏开启状态)
-      fullScreen(status,value){
-        console.log(value);
-        console.log(status);
-      },
-      //切换沉浸式阅读的回调事件(boolean: 阅读开启状态)
-      readModel(status,value){
-        console.log(value);
-        console.log(status);
-      },
-      //查看html源码的回调事件(boolean: 源码开启状态)
-      htmlCode(status,value){
-        console.log(value);
-        console.log(status);
-      },
-      //切换单双栏编辑的回调事件(boolean: 双栏开启状态)
-      subfieldToggle(status,value){
-        console.log(value);
-        console.log(status);
-      },
-      //切换预览编辑的回调事件(boolean: 预览开启状态)
-      previewToggle(status,value){
-        console.log(value);
-        console.log(status);
-      },
-      //查看帮助的回调事件(boolean: 帮助开启状态)
-      helpToggle(status,value){
-        console.log(value);
-        console.log(status);
-      },
-      //切换导航目录的回调事件(boolean: 导航开启状态)
-      navigationToggle(status,value){
-        console.log(value);
-        console.log(status);
-      },
       //图片文件添加回调事件(filename: 写在md中的文件名, File: File Object)
       imgAdd(filename,imgfile){
         // 第一步.将图片上传到服务器.
-        // var formdata = new FormData();
-        // formdata.append('image', $file);
-        // axios({
-        //   url: 'server url',
-        //   method: 'post',
-        //   data: formdata,
-        //   headers: { 'Content-Type': 'multipart/form-data' },
-        // }).then((url) => {
-        //   // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
-        //   /**
-        //    * $vm 指为mavonEditor实例，可以通过如下两种方式获取
-        //    * 1. 通过引入对象获取: `import {mavonEditor} from ...` 等方式引入后，`$vm`为`mavonEditor`
-        //    * 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
-        //    */
-        //   $vm.$img2Url(pos, url);
-        // })
-      },
-      //图片文件添加回调事件(filename: 写在md中的文件名, File: File Object)
-      imgDel(filename){
-        console.log(filename);
-      },
-
+        upload(imgfile).then(({data})=>{
+          // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+          this.$refs.md.$img2Url(filename, data.url);
+        })
+      }
     }
   };
 </script>

@@ -19,13 +19,16 @@ public class FileUtil {
 
     public static FileResponse upload(MultipartFile file, String url){
         try {
-        OkHttpClient httpClient = new OkHttpClient();
-        MultipartBody multipartBody = new MultipartBody.Builder().
+            String newName = System.currentTimeMillis() + "" + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+            System.out.println(newName);
+            OkHttpClient httpClient = new OkHttpClient();
+            MultipartBody multipartBody = new MultipartBody.Builder().
                 setType(MultipartBody.FORM)
                 .addFormDataPart("file", file.getOriginalFilename(),
                         RequestBody.create(MediaType.parse("multipart/form-data;charset=utf-8"),
                                 file.getBytes()))
                 .addFormDataPart("output", "json")
+                .addFormDataPart("fileName", newName)
                 .build();
         Request request = new Request.Builder()
                 .url(url)

@@ -155,7 +155,7 @@
       },
       /** 查看按钮操作 */
       detail(row) {
-        this.$router.push("/blog/detail/" + row.id);
+        this.$router.push("/func/blog/detail/" + row.id);
       },
       /** 删除按钮操作 */
       handleDelete(row) {

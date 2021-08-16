@@ -15,13 +15,6 @@ export function page(query) {
     params: query
   })
 }
-// 查询详细
-export function getInfo(id) {
-  return request({
-    url: '/func/blog/' + id,
-    method: 'get'
-  })
-}
 
 // 修改
 export function update(data) {

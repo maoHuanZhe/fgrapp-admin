@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: 'FGRAPP管理系统',
+      title: 'FGRAPP',
       logo: logoImg
     }
   }

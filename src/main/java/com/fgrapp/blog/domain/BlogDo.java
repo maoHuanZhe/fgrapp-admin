@@ -31,6 +31,8 @@ public class BlogDo extends BaseDo {
     private String imgUrl;
     @ApiModelProperty(value = "内容")
     private String content;
+    @ApiModelProperty(value = "摘要")
+    private String summary;
 
     @ApiModelProperty(value = "博客分类列表")
     @TableField(exist = false)

@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fgrapp.blog.dao.BlogMapper">
+    <delete id="dels">
+        DELETE
+            fb,fbc,fbon,fc
+        FROM
+            func_blog fb,func_blog_class fbc,func_blog_operate_num fbon,func_comment fc
+        WHERE
+            fb.id  = fbc.blogId
+          AND fb.id = fbon.blogId
+          AND fb.id = fc.blogId
+          AND fb.id = 1
+    </delete>
     <select id="getPage" resultType="java.util.Map">
         select
-            id, title, imgUrl, createTime, createAt, updateTime, updateAt
+            id, title, type, imgUrl, summary, createTime, createAt, updateTime, updateAt
         from func_blog
         <where>
             <if test="ew.title != null and ew.title != ''">
@@ -16,5 +27,31 @@
                 and date_format(createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
             </if>
         </where>
+    </select>
+    <select id="getBlogPage" resultType="java.util.Map">
+        SELECT GROUP_CONCAT( DISTINCT fc.name) AS classNames,
+                fbon.readNum,fbon.likeNum,
+                COUNT(DISTINCT fco.id) AS commentNum,
+                fb.id, fb.title, fb.type, fb.imgUrl, fb.summary, fb.createTime, fb.createAt, fb.updateTime, fb.updateAt
+        FROM func_blog AS fb
+                LEFT JOIN func_blog_class AS fbc ON fb.id = fbc.blogId
+                LEFT JOIN func_class AS fc ON fbc.classId = fc.id
+                LEFT JOIN func_blog_operate_num AS fbon ON fb.id = fbon.blogId
+                LEFT JOIN func_comment AS fco ON fb.id =fco.blogId
+        <where>
+            <if test="ew.classId != null and ew.classId != ''">
+                and classId = #{ew.classId}
+            </if>
+            <if test="ew.title != null and ew.title != ''">
+                and title like concat('%', #{ew.title}, '%')
+            </if>
+            <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(fb.createTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+            </if>
+            <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(fb.createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+            </if>
+        </where>
+        GROUP BY fb.id
     </select>
 </mapper>
