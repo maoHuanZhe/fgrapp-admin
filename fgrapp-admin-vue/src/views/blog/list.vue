@@ -39,7 +39,7 @@
           {{item.likeNum}} 点赞</span>
         <!--   评论数   -->
         <span style="margin-right: 10px;">
-        <i class="el-icon-chat-line-round"></i>
+          <svg-icon icon-class='message'/>
           {{item.commentNum}} 评论</span>
       </div>
     </el-card>
@@ -86,7 +86,9 @@
             page(this.queryParams).then(({data})=>{
               this.list = data.records;
               this.list.forEach(item=>{
-                item.classNames = item.classNames.split(",")
+                if (item.classNames){
+                  item.classNames = item.classNames.split(",")
+                }
               })
               this.total = data.total;
             })

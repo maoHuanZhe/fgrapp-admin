@@ -1,26 +1,29 @@
 <template>
   <!-- 评论模块 -->
   <div>
-    <div>
+    <div style="margin: 10px;">
       <!--      输入评论    -->
-      <el-input maxlength="1024"
+      <el-input ref="commentInput" maxlength="1024"
                 show-word-limit
                 type="textarea"
                 placeholder="说点什么"
-                v-model="addForm.content">
+                v-model="addForm.content"
+                @focus="checkLogin">
       </el-input>
       <el-row type="flex" justify="end">
         <el-button @click="handClick">发表评论</el-button>
       </el-row>
     </div>
     <!--   已存在评论模块   -->
-    <comment-item v-for="item in list" :key="item.id" :item="item" />
+    <comment-item v-for="item in commentList" :key="item.id" :item="item" />
   </div>
 </template>
 
 <script>
   import commentItem from "@/views/blog/comment/commentItem";
-  import { addComment } from "@/api/blog";
+  import {addComment} from "@/api/blog";
+  import {mapGetters} from "vuex";
+  import store from "@/store";
     export default {
         name: "index",
       components:{
@@ -46,30 +49,18 @@
       },
       created(){
         this.addForm.blogId = this.blogId;
-        this.list = this.commentList.filter(item=> {
-          let flag = item.parentId === 0;
-          if (flag){
-            let childArr = this.getChildArr(item.id,this.commentList);
-            if (childArr.length > 0){
-              item.childArr = childArr;
-            }
-          }
-          return flag;
-        })
+      },
+      computed: {
+        ...mapGetters([
+          'token',
+        ]),
       },
       methods:{
-        getChildArr: function (id, data) {
-          //查找子集
-          return data.filter(chiledItem => {
-            let flag = id === chiledItem.parentId;
-            if (flag){
-              let childArr = this.getChildArr(chiledItem.id,data);
-              if (childArr.length > 0){
-                chiledItem.childArr = childArr;
-              }
-            }
-            return flag;
-          })
+        checkLogin(){
+          //判断用户是否登陆 登陆后才能参与点赞评论
+          if (!this.token){
+            store.commit('SET_SHOWREGISTER', true)
+          }
         },
         handClick(){
           if (this.addForm.content){

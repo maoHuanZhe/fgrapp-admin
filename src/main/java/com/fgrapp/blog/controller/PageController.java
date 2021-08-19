@@ -1,7 +1,6 @@
 package com.fgrapp.blog.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fgrapp.base.controller.FgrController;
 import com.fgrapp.base.log.BusinessType;
@@ -60,6 +59,9 @@ public class PageController extends FgrController {
     public Map<String,Object> getDetailInfo(@PathVariable Long id){
         return service.getDetailInfo(id);
     }
+
+
+    @SaCheckLogin
     @PutMapping("/operateNum/{id}/{num}")
     @ApiOperation("博客点赞与取消点赞操作")
     public void updateLickNum(@PathVariable Long id,@PathVariable int num){
@@ -67,8 +69,8 @@ public class PageController extends FgrController {
     }
 
     @PostMapping
+    @SaCheckLogin
     @ApiOperation("新增博客评论")
-    @SaCheckPermission("func:comment:add")
     @Log(title = "博客评论信息", businessType = BusinessType.INSERT)
     @CacheEvict(cacheNames = "comment",key = "#info.blogId")
     public void save(@Validated @RequestBody CommentDo info){

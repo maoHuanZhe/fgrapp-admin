@@ -103,12 +103,16 @@ public class SysLoginService {
             logininforService.saveLog(loginBody.getUsername(),Constants.FAIL,"密码输入错误");
             throw new ResultException("密码输入错误");
         }
+        return userLogin(user);
+    }
+
+    public String userLogin(SysUserDo user) {
         String device = FgrUtil.getDevice();
         StpUtil.login(user.getId(),device);
         SaSession saSession = StpUtil.getTokenSession();
         recordLoginInfo(user);
         saSession.set(UserConstants.USER_KEY,user);
-        logininforService.saveLog(loginBody.getUsername(),Constants.SUCCESS,"OK");
+        logininforService.saveLog(user.getUserName(), Constants.SUCCESS,"OK");
         return StpUtil.getTokenInfo().tokenValue;
     }
 

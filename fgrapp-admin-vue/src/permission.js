@@ -11,6 +11,10 @@ const whiteList = ['/login', '/auth-redirect', '/bind', '/register', '/blog']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
+  if (to.path.startsWith("/blog")){
+    //博客部分页面 直接继续不校验任何东西
+    return  next();
+  }
   if (getToken()) {
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     /* has token*/
@@ -37,7 +41,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     // 没有token
-    if (whiteList.indexOf(to.path) !== -1 || to.path.startsWith("/blog")) {
+    if (whiteList.indexOf(to.path) !== -1) {
       // 在免登录白名单，直接进入
       next()
     } else {

@@ -1,6 +1,14 @@
 <template>
   <div class="mavonEditor">
-    <div style="background: #f8f8f8;border-radius: 4px;padding: 5px;">
+
+    <h1 style="    font-size: 28px;
+    word-wrap: break-word;
+    color: #222226;
+    font-weight: 600;
+    margin: 0;
+    word-break: break-all;">{{form.title}}</h1>
+    <div style="background: #f8f8f8;border-radius: 10px;padding: 5px 20px;
+    margin-top: 10px;">
       <div style="color: #999aaa;">
         <!--   创作时间   -->
         <el-link type="info" :underline="false" style="margin-right: 10px;">
@@ -17,9 +25,9 @@
         <svg-icon icon-class='like'/>
           {{operateNum.likeNum}} 点赞</el-link>
         <!--   评论数   -->
-        <el-link type="info" :underline="false" style="margin-right: 10px;">
-        <i class="el-icon-chat-line-round"></i>
-          {{commentList.length}} 评论</el-link>
+        <el-link @click="toComment" type="info" :underline="false" style="margin-right: 10px;">
+          <svg-icon icon-class='message'/>
+          {{commentNum}} 评论</el-link>
       </div>
       <div style="color: #999aaa;padding-top: 5px;">
         <!--   分类专栏   -->
@@ -27,28 +35,60 @@
         <el-tag v-for="name in form.addClassNames" size="mini" style="margin-right: 10px;">{{name}}</el-tag>
       </div>
     </div>
-    <h1 style="font-size:200%;text-align: center">{{form.title}}</h1>
-    <mavon-editor
+    <mavon-editor style="margin: 10px 0;"
       v-model="form.content"
       defaultOpen = "preview"
       :toolbarsFlag = "false"
       :subfield = "false"
     />
+    <el-card ref="commentAndLike" class="commentAndLike">
+      <div style="display: flex;flex-wrap: nowrap;align-items: center;justify-content: center;">
+<!--        <div >-->
+        <!--   点赞数   -->
+        <el-tooltip content="点赞" placement="top" effect="light">
+        <div @click="likeClike" style="width: 46px;">
+          <svg-icon  style="width: 24px;height: 24px;margin-right: 4px;margin-bottom: -2px;" icon-class='like'/>
+          <el-link :type="operateNum.canLike?'info':'danger'"
+                   :underline="false" style="margin-right: 10px;"
+                   ref="likeLink">
+            {{operateNum.likeNum}}</el-link>
+        </div>
+        </el-tooltip>
+        <!--   评论数   -->
+        <el-tooltip content="评论" placement="top" effect="light">
+          <div  @click="toComment" style="width: 55px;">
+            <svg-icon  style="width: 24px;height: 24px;margin-right: 4px;margin-bottom: -6px;" icon-class='message'/>
+            <el-link type="info" :underline="false" style="margin-right: 10px;">
+              {{commentNum}}</el-link>
+          </div>
+        </el-tooltip>
+      </div>
+    </el-card>
+
     <!--  评论模块  -->
-    <compent :blogId="blogId" :commentList="commentList" />
+    <compent ref="comment" :blogId="blogId" :commentList="commentList" />
   </div>
 </template>
 
 <script>
   import { updateLickNum,getDetailInfo } from "@/api/blog";
   import Compent from "@/views/blog/comment/index"
+  import {mapGetters} from "vuex";
+  import store from "@/store";
   export default {
     components:{
       Compent
     },
+    computed: {
+      ...mapGetters([
+        'token',
+      ])
+    },
     data() {
       return {
+        isActive:false,
         loading: false,
+        commentNum: 0,
         commentList:[],
         operateNum: {
           readNum:0,
@@ -68,39 +108,90 @@
       this.blogId = id;
       getDetailInfo(id).then(({data}) => {
         this.form = data.blog;
-        this.commentList = data.commentDos;
+        this.commentList = this.getRootList(data.commentDos);
+        this.commentNum = data.commentDos.length;
         this.operateNum = data.operateNum;
       })
     },
+
     methods:{
+      toComment(){
+        scrollTo({'top':this.$refs.comment.$el.offsetTop-20,
+          behavior: "smooth"});
+        this.$nextTick(()=>{
+          this.$refs.comment.$refs.commentInput.focus();
+        })
+      },
+      getRootList(list){
+        return list.filter(item=> {
+          let flag = item.parentId === 0;
+          if (flag){
+            let childArr = this.getChildArr(item.id,list);
+            if (childArr.length > 0){
+              item.childArr = childArr;
+            }
+          }
+          return flag;
+        })
+      },
+      getChildArr: function (id, data) {
+        //查找子集
+        return data.filter(chiledItem => {
+          let flag = id === chiledItem.parentId;
+          if (flag){
+            let childArr = this.getChildArr(chiledItem.id,data);
+            if (childArr.length > 0){
+              chiledItem.childArr = childArr;
+            }
+          }
+          return flag;
+        })
+      },
       likeClike(){
         //判断用户是否登陆 登陆后才能参与点赞评论
-        //判断当前用户是否已经点赞，
-        let num = 0;
-        if (this.operateNum.canLike){
-          //之前没有点赞 现在将点赞数加一
-          num = 1;
+        if (this.token){
+          //判断当前用户是否已经点赞，
+          let num = 0;
+          if (this.operateNum.canLike){
+            //之前没有点赞 现在将点赞数加一
+            num = 1;
+          } else {
+            //之前已经点赞， 现在取消点赞 点赞数减一
+            num = -1
+          }
+          updateLickNum(this.blogId,num).then(()=>{
+            //是否点赞状态改变
+            this.operateNum.canLike = !this.operateNum.canLike;
+            //点赞数改变
+            this.operateNum.likeNum += num;
+          })
         } else {
-          //之前已经点赞， 现在取消点赞 点赞数减一
-          num = -1
+          store.commit('SET_SHOWREGISTER', true)
         }
-        updateLickNum(this.blogId,num).then(()=>{
-          //是否点赞状态改变
-          this.operateNum.canLike = !this.operateNum.canLike;
-          //点赞数改变
-          this.operateNum.likeNum += num;
-        })
       }
     }
   };
 </script>
 
 <style scoped>
+  .commentAndLike{
+    position: fixed;
+    z-index: 2000;
+    bottom: 0;
+    width: 1152px;
+    background-color: #fff;
+    margin-left: -16px;
+  }
+  .commentAndLike2{
+    width: 1120px;
+    background-color: #fff;
+  }
   .mavonEditor {
     width: 100%;
     height: 100%;
     background: #fff;
-    padding: 0 24px 16px;
+    border-radius: 10px;
+    padding: 16px;
   }
   ::-moz-selection {
     background: #26a69a;

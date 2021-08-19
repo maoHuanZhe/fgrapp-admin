@@ -20,7 +20,21 @@
           </el-menu>
         </div>
 
-        <el-link :underline="false">登录/注册</el-link>
+        <el-link v-if="name === ''" @click="loginOrReg" :underline="false">登录/注册</el-link>
+        <el-dropdown v-else class="avatar-container right-menu-item hover-effect" trigger="click">
+          <div class="avatar-wrapper">
+            <img :src="avatar" class="user-avatar">
+            <i class="el-icon-caret-bottom" />
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>
+              <span>{{ name }}</span>
+            </el-dropdown-item>
+            <el-dropdown-item divided @click.native="logout">
+              <span>退出登录</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </el-row>
     </el-header>
 
@@ -29,17 +43,34 @@
           <router-view />
       </transition>
     </el-main>
+    <el-dialog :visible.sync="showRegister" :before-close="closeRegister" width="600px" append-to-body>
+      <register/>
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
   import {list} from "@/api/func/class";
   import Logo from "@/layout/components/Sidebar/Logo";
+  import Register from "@/views/blog/register";
+  import {getToken} from "@/utils/auth";
+  import store from "@/store";
+  import {mapGetters} from "vuex";
     export default {
       name: "index",
-      components: { Logo },
+      computed: {
+        ...mapGetters([
+          'name',
+          'showRegister',
+          'avatar'
+        ]),
+      },
+      components: { Logo,Register },
       data(){
         return{
+          userName: '',
+          open:false,
+          loading: false,
           classOptions:[],
           defaultActive:'home'
         }
@@ -55,8 +86,35 @@
         list().then(({data})=>{
           this.classOptions = data;
         })
+        //获取当前用户
+        if (getToken()) {
+          //已登录
+            if (!store.getters.name) {
+              //未获取用户信息  获取用户信息
+              store.dispatch('GetInfo')
+            }
+        }
       },
       methods:{
+        async logout() {
+          this.$confirm('确定注销并退出系统吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.$store.dispatch('LogOut').then(()=>{
+              this.$router.go(0)//页面重新刷新
+            })
+          })
+        },
+        loginOrReg(){
+          //登陆或注册
+          store.commit('SET_SHOWREGISTER', true)
+        },
+        closeRegister(){
+          //登陆或注册
+          store.commit('SET_SHOWREGISTER', false)
+        },
           handleSelect(key, keyPath) {
             if (key === 'home'){
               return this.$router.push("/blog");
@@ -69,7 +127,30 @@
     }
 </script>
 
-<style scoped>
+<style rel="stylesheet/scss" lang="scss">
+  .avatar-container {
+    margin-right: 30px;
+
+    .avatar-wrapper {
+      margin-top: 5px;
+      position: relative;
+
+      .user-avatar {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+      }
+
+      .el-icon-caret-bottom {
+        cursor: pointer;
+        position: absolute;
+        right: -20px;
+        top: 25px;
+        font-size: 12px;
+      }
+    }
+  }
   .site-nav {
     width: 100%;
     background-color: #f5f5f5;
@@ -92,5 +173,63 @@
   .main{
     width: 1190px;
     margin: auto;
+  }
+  .login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-size: cover;
+  }
+  .title {
+    margin: 0 auto 30px auto;
+    text-align: center;
+    color: #707070;
+  }
+
+  .login-form {
+    border-radius: 6px;
+    background: #ffffff;
+    width: 400px;
+    .el-input {
+      height: 38px;
+      input {
+        height: 38px;
+      }
+    }
+    .input-icon {
+      height: 39px;
+      width: 14px;
+      margin-left: 2px;
+    }
+  }
+  .login-tip {
+    font-size: 13px;
+    text-align: center;
+    color: #bfbfbf;
+  }
+  .login-code {
+    width: 33%;
+    height: 38px;
+    float: right;
+    img {
+      cursor: pointer;
+      vertical-align: middle;
+    }
+  }
+  .el-login-footer {
+    height: 40px;
+    line-height: 40px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-family: Arial,serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .login-code-img {
+    height: 38px;
   }
 </style>

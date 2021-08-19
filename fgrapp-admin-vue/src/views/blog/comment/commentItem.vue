@@ -12,7 +12,7 @@
     <div>
       <el-button @click="handParentClick(item)">回复</el-button>
     </div>
-    <div v-if="item.show">
+    <div style="margin: 10px;" v-if="item.show">
       <!--      输入评论    -->
       <el-input maxlength="1024"
                 show-word-limit

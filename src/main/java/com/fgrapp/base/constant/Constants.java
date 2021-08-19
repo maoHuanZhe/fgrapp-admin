@@ -130,4 +130,5 @@ public class Constants {
 
     public static final String CAPTCHATYPE_MATH = "math";
     public static final String CAPTCHATYPE_CHAR = "char";
+    public static final String OK = "OK";
 }
