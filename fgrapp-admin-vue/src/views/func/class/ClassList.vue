@@ -36,7 +36,7 @@
         },
         isSort:{
           type:Boolean,
-          default:false
+          default:true
         }
       },
       watch:{
@@ -60,7 +60,6 @@
       methods:{
         liClick(id){
           if (!this.isSort){
-
             const pathId = this.$route.params && this.$route.params.blogId;
             if (id !== parseInt(pathId)){
               this.$router.push("/blog/detail/" + id);

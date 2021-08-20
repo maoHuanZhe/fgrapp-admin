@@ -11,9 +11,16 @@ import com.fgrapp.base.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 发送消息的工具类
@@ -36,8 +43,14 @@ public class MessageUtil {
     private String signName;
     @Value("${fgr.ali.message.templateCode}")
     private String templateCode;
+    @Value("${spring.mail.username}")
+    private String sendEmail;
     @Autowired
     private SysMessageLogMapper logMapper;
+    @Autowired
+    private JavaMailSender javaMailSender;
+    @Autowired
+    private TemplateEngine templateEngine;
     /**
      * 使用AK&SK初始化账号Client
      * @return Client
@@ -99,4 +112,57 @@ public class MessageUtil {
      *   "Code": "OK"
      * }
      */
+
+    public boolean sendSimpleMail(String email,String code) {
+        try {
+            // 构建一个邮件对象
+            SimpleMailMessage message = new SimpleMailMessage();
+            // 设置邮件主题
+            message.setSubject("【FGRAPP】注册登录验证码");
+            // 设置邮件发送者，这个跟application.yml中设置的要一致
+            message.setFrom(sendEmail);
+            // 设置邮件接收者，可以有多个接收者，中间用逗号隔开，以下类似
+            // message.setTo("10*****16@qq.com","12****32*qq.com");
+            message.setTo(email);
+            // 设置邮件抄送人，可以有多个抄送人
+//        message.setCc("12****32*qq.com");
+            // 设置隐秘抄送人，可以有多个
+//        message.setBcc("7******9@qq.com");
+            // 设置邮件发送日期
+            message.setSentDate(new Date());
+            // 设置邮件的正文
+            message.setText(code);
+            // 发送邮件
+            javaMailSender.send(message);
+            return true;
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean sendThymeleafMail(String email,String code) {
+        try {
+
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            mimeMessage.setSubject("【FGRAPP】注册登录验证码");
+            helper.setFrom(sendEmail);
+            helper.setTo(email);
+            helper.setSentDate(new Date());
+            // 这里引入的是Template的Context
+            Context context = new Context();
+            // 设置模板中的变量
+            context.setVariable("code", code);
+            // 第一个参数为模板的名称
+            String process = templateEngine.process("register.html", context);
+            // 第二个参数true表示这是一个html文本
+            helper.setText(process,true);
+            javaMailSender.send(mimeMessage);
+            return true;
+        }  catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

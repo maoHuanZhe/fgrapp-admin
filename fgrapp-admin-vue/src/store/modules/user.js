@@ -1,5 +1,5 @@
 import { login, logout, getInfo } from '@/api/login'
-import { phoneRegister } from "@/api/register";
+import { phoneRegister, registerOfEmail } from "@/api/register";
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -55,6 +55,18 @@ const user = {
     PhoneRegister({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         phoneRegister(userInfo).then(res => {
+          setToken(res.data)
+          commit('SET_TOKEN', res.data)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    // 邮箱注册
+    EmailRegister({ commit }, userInfo) {
+      return new Promise((resolve, reject) => {
+        registerOfEmail(userInfo).then(res => {
           setToken(res.data)
           commit('SET_TOKEN', res.data)
           resolve()

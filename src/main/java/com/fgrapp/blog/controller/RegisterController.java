@@ -2,7 +2,8 @@ package com.fgrapp.blog.controller;
 
 import com.fgrapp.base.controller.FgrController;
 import com.fgrapp.base.result.ResponseResultBody;
-import com.fgrapp.blog.domain.vo.RegisterVo;
+import com.fgrapp.blog.domain.vo.EmailRegisterVo;
+import com.fgrapp.blog.domain.vo.PhoneRegisterVo;
 import com.fgrapp.blog.service.RegisterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,9 +29,19 @@ public class RegisterController extends FgrController {
     public void sendMessage(@PathVariable String phone){
         service.sendMessage(phone);
     }
+    @GetMapping("/email/{email}")
+    @ApiOperation("发送邮件验证码")
+    public void sendEmailMessage(@PathVariable String email){
+        service.sendEmailMessage(email);
+    }
     @PostMapping("/phone")
     @ApiOperation("手机号注册")
-    public String register(@Validated @RequestBody RegisterVo info){
+    public String register(@Validated @RequestBody PhoneRegisterVo info){
         return service.register(info);
+    }
+    @PostMapping("/email")
+    @ApiOperation("邮箱注册")
+    public String registerOfEmail(@Validated @RequestBody EmailRegisterVo info){
+        return service.registerOfEmail(info);
     }
 }
