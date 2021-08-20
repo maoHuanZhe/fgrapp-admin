@@ -5,12 +5,12 @@
         DELETE
             fb,fbc,fbon,fc
         FROM
-            func_blog fb,func_blog_class fbc,func_blog_operate_num fbon,func_comment fc
+            func_blog fb
+                LEFT JOIN func_blog_class fbc ON fb.id  = fbc.blogId
+                LEFT JOIN func_blog_operate_num fbon ON fb.id = fbon.blogId
+                LEFT JOIN func_comment fc ON fb.id = fc.blogId
         WHERE
-            fb.id  = fbc.blogId
-          AND fb.id = fbon.blogId
-          AND fb.id = fc.blogId
-          AND fb.id = 1
+            fb.id = #{id}
     </delete>
     <select id="getPage" resultType="java.util.Map">
         select
@@ -53,5 +53,10 @@
             </if>
         </where>
         GROUP BY fb.id
+            order by
+        <if test="ew.classId != null and ew.classId != ''">
+            sortNum asc,
+        </if>
+             fb.id desc
     </select>
 </mapper>

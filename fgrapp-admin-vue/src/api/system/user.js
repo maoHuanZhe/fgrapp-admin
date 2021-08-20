@@ -61,9 +61,9 @@ export function exportUser(query) {
 }
 
 // 用户密码重置
-export function resetUserPwd(userId, password) {
+export function resetUserPwd(id, password) {
   const data = {
-    userId,
+    id,
     password
   }
   return request({

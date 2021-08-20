@@ -20,4 +20,6 @@ import lombok.*;
 public class ClassDo extends BaseDo {
     @ApiModelProperty(value = "分类名称")
     private String name;
+    @ApiModelProperty(value = "是否在主页显示")
+    private Boolean isMain;
 }

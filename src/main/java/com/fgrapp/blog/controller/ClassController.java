@@ -6,6 +6,7 @@ import com.fgrapp.base.controller.FgrController;
 import com.fgrapp.base.log.BusinessType;
 import com.fgrapp.base.log.Log;
 import com.fgrapp.base.result.ResponseResultBody;
+import com.fgrapp.blog.domain.BlogClassDo;
 import com.fgrapp.blog.domain.ClassDo;
 import com.fgrapp.blog.service.ClassService;
 import io.swagger.annotations.Api;
@@ -74,7 +75,15 @@ public class ClassController extends FgrController {
     @Log(title = "博客分类信息", businessType = BusinessType.UPDATE)
     public ClassDo updeate(@Validated @RequestBody ClassDo info){
         service.updateById(info);
-        return info;
+        return service.getById(info.getId());
+    }
+
+    @PutMapping("blogSort")
+    @ApiOperation("修改分类下博客排序")
+    @SaCheckPermission("func:class:edit")
+    @Log(title = "博客分类信息", businessType = BusinessType.UPDATE)
+    public void blogSort(@RequestBody List<BlogClassDo> list){
+        service.blogSort(list);
     }
 
     @DeleteMapping("/{ids}")

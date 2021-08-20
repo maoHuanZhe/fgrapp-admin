@@ -21,4 +21,5 @@ import lombok.NoArgsConstructor;
 public class BlogClassDo {
     private Long blogId;
     private Long classId;
+    private Integer sortNum;
 }

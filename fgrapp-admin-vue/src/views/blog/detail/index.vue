@@ -32,7 +32,7 @@
       <div style="color: #999aaa;padding-top: 5px;">
         <!--   分类专栏   -->
         <span style="margin-right: 5px;">分类专栏:</span>
-        <el-tag v-for="name in form.addClassNames" size="mini" style="margin-right: 10px;">{{name}}</el-tag>
+        <el-tag v-for="name in form.addClassNames" :key="name" size="mini" style="margin-right: 10px;">{{name}}</el-tag>
       </div>
     </div>
     <mavon-editor style="margin: 10px 0;"
@@ -45,12 +45,12 @@
       <div style="display: flex;flex-wrap: nowrap;align-items: center;justify-content: center;">
 <!--        <div >-->
         <!--   点赞数   -->
-        <el-tooltip content="点赞" placement="top" effect="light">
+        <el-tooltip :content="operateNum.canLike?'点赞':'取消点赞'" placement="top" effect="light">
         <div @click="likeClike" style="width: 46px;">
-          <svg-icon  style="width: 24px;height: 24px;margin-right: 4px;margin-bottom: -2px;" icon-class='like'/>
           <el-link :type="operateNum.canLike?'info':'danger'"
                    :underline="false" style="margin-right: 10px;"
                    ref="likeLink">
+            <svg-icon  style="width: 24px;height: 24px;margin-bottom: -2px;" icon-class='like'/>
             {{operateNum.likeNum}}</el-link>
         </div>
         </el-tooltip>
@@ -62,11 +62,20 @@
               {{commentNum}}</el-link>
           </div>
         </el-tooltip>
+        <el-dropdown  @command="handleCommand">
+          <el-button round>
+            分类专栏<i class="el-icon-arrow-up el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :command="index" v-for="(name,index) in form.addClassNames" :key="'dropdown-'+index">{{name}}</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
     </el-card>
 
     <!--  评论模块  -->
     <compent ref="comment" :blogId="blogId" :commentList="commentList" />
+    <class-list :drawerTitle="drawerTitle" :drawer="drawer" :isSort="false" :classId="classId" @beforeClose="handleClose"/>
   </div>
 </template>
 
@@ -75,9 +84,11 @@
   import Compent from "@/views/blog/comment/index"
   import {mapGetters} from "vuex";
   import store from "@/store";
+  import ClassList from "@/views/func/class/ClassList";
   export default {
     components:{
-      Compent
+      Compent,
+      ClassList
     },
     computed: {
       ...mapGetters([
@@ -86,6 +97,9 @@
     },
     data() {
       return {
+        classId:undefined,
+        drawer: false,
+        drawerTitle:'',
         isActive:false,
         loading: false,
         commentNum: 0,
@@ -113,8 +127,15 @@
         this.operateNum = data.operateNum;
       })
     },
-
     methods:{
+      handleCommand(command) {
+          this.classId = this.form.classIds[command];
+        this.drawerTitle = this.form.addClassNames[command];
+          this.drawer = true;
+      },
+      handleClose(){
+        this.drawer = false;
+      },
       toComment(){
         scrollTo({'top':this.$refs.comment.$el.offsetTop-20,
           behavior: "smooth"});

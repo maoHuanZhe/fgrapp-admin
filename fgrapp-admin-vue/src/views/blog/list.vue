@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-card shadow="hover" v-for="item in list" @click.native="toDeatil(item.id)" :key="item.id">
+    <el-empty v-if="list.length === 0" :image-size="200"></el-empty>
+    <el-card v-else shadow="hover" v-for="item in list" @click.native="toDeatil(item.id)" :key="item.id">
         <div style="font-size: 18px;
     font-weight: 500;
     line-height: 24px;
@@ -8,9 +9,7 @@
     overflow: hidden;
     white-space: normal;
     word-break: break-word;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;">
+    display: -webkit-box;">
           {{item.title}}</div>
       <div style="color: #555666;
     margin-top: 8px;
@@ -18,13 +17,11 @@
     overflow: hidden;
     white-space: normal;
     word-break: break-word;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;">
+    display: -webkit-box;">
         {{item.summary}}
       </div>
       <div style="margin-top: 8px;">
-        <el-tag v-for="name in item.classNames" size="mini" style="margin-right: 10px;">{{name}}</el-tag>
+        <el-tag v-for="(name,index) in item.classNames" :key="index +'class'+item.id" size="mini" style="margin-right: 10px;">{{name}}</el-tag>
       </div>
       <div style="color: #555666;margin-top: 8px;">
         <!--   创作时间   -->
@@ -58,8 +55,7 @@
             pageNum: 1,
             pageSize: 10,
             title: undefined,
-            classId:undefined,
-            order:'fb.id-desc'
+            classId:undefined
           },
           list:[]
         }

@@ -10,6 +10,7 @@ import com.fgrapp.blog.dao.ClassMapper;
 import com.fgrapp.blog.domain.BlogClassDo;
 import com.fgrapp.blog.domain.ClassDo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -41,5 +42,12 @@ public class ClassService extends FgrService<ClassMapper, ClassDo> {
             throw new ResultException("分类下存在博客，不能删除");
         }
         baseMapper.deleteBatchIds(ids);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void blogSort(List<BlogClassDo> list) {
+        Long classId = list.get(0).getClassId();
+        blogClassMapper.delete(new LambdaQueryWrapper<BlogClassDo>().eq(BlogClassDo::getClassId,classId));
+        blogClassMapper.insertBatch(list);
     }
 }

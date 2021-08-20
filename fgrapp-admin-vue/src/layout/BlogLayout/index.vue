@@ -13,9 +13,11 @@
             mode="horizontal"
             @select="handleSelect">
             <el-menu-item index="home">主页</el-menu-item>
-            <el-menu-item v-for="item in classOptions" :index="item.id+''" :key="item.id">{{item.name}}</el-menu-item>
+            <el-menu-item v-for="item in mainOptions" :index="item.id+''" :key="item.id">{{item.name}}</el-menu-item>
             <el-submenu index="0">
               <template slot="title">其它分类</template>
+              <el-menu-item v-for="item in otherOptions" :index="item.id+''" :key="item.id">{{item.name}}</el-menu-item>
+
             </el-submenu>
           </el-menu>
         </div>
@@ -30,6 +32,9 @@
             <el-dropdown-item>
               <span>{{ name }}</span>
             </el-dropdown-item>
+            <el-dropdown-item v-if="roles.length" divided  @click.native="goto">
+              <span>进入后台</span>
+            </el-dropdown-item>
             <el-dropdown-item divided @click.native="logout">
               <span>退出登录</span>
             </el-dropdown-item>
@@ -43,7 +48,29 @@
           <router-view />
       </transition>
     </el-main>
-    <el-dialog :visible.sync="showRegister" :before-close="closeRegister" width="600px" append-to-body>
+    <el-footer style="text-align: center;background-color: #fff;">
+      <!--      csdn      -->
+      <el-tooltip class="item" effect="dark" content="CSDN地址" placement="top">
+        <el-link :underline="false" type="info" href="https://blog.csdn.net/qq_39016934" target="_blank">
+          <svg-icon icon-class='csdn'/></el-link>
+      </el-tooltip>
+      <!--      github      -->
+      <el-tooltip class="item" effect="dark" content="GitHub地址" placement="top">
+        <el-link :underline="false" type="info" href="https://github.com/maoHuanZhe" target="_blank">
+          <svg-icon icon-class='github'/></el-link>
+      </el-tooltip>
+      <!--      qq      -->
+      <el-tooltip class="item" effect="dark" content="QQ联系" placement="top">
+        <el-link :underline="false" type="info" href="http://sighttp.qq.com/authd?IDKEY=5b0c5a703ad65f10c06e40a8f2169b3cd74487c67322f867" target="_blank">
+          <svg-icon icon-class='qq'/></el-link>
+      </el-tooltip><br>
+      <!--      备案号      -->
+      <el-tooltip class="item" effect="dark" content="备案号" placement="top">
+        <el-link :underline="false" type="info" href="http://beian.miit.gov.cn/" target="_blank">皖ICP备2020015593号</el-link>
+      </el-tooltip><br>
+      <el-link :underline="false" type="info" href="http://beian.miit.gov.cn/" target="_blank">Copyright © 2021 fgrapp.com All Rights Reserved.</el-link>
+    </el-footer>
+    <el-dialog :visible.sync="showRegister" :before-close="closeRegister" width="450px" append-to-body>
       <register/>
     </el-dialog>
   </el-container>
@@ -61,6 +88,7 @@
       computed: {
         ...mapGetters([
           'name',
+          'roles',
           'showRegister',
           'avatar'
         ]),
@@ -71,7 +99,8 @@
           userName: '',
           open:false,
           loading: false,
-          classOptions:[],
+          mainOptions:[],
+          otherOptions:[],
           defaultActive:'home'
         }
       },
@@ -84,7 +113,17 @@
         }
         //获取分类列表
         list().then(({data})=>{
-          this.classOptions = data;
+          let main = [];
+          let other = [];
+          data.forEach(item=>{
+            if (item.isMain){
+              main.push(item)
+            }else {
+              other.push(item)
+            }
+          })
+          this.mainOptions = main;
+          this.otherOptions = other;
         })
         //获取当前用户
         if (getToken()) {
@@ -96,6 +135,9 @@
         }
       },
       methods:{
+        goto() {
+          window.open("/admin")
+        },
         async logout() {
           this.$confirm('确定注销并退出系统吗？', '提示', {
             confirmButtonText: '确定',

@@ -3,7 +3,7 @@
 <mapper namespace="com.fgrapp.blog.dao.ClassMapper">
     <select id="getPage" resultType="java.util.Map">
         select
-            id, name, createAt, createTime, updateAt, updateTime
+            id, name,isMain, createAt, createTime, updateAt, updateTime
         from func_class
         <where>
             <if test="ew.createAt != null and ew.createAt != ''">
@@ -22,7 +22,7 @@
     </select>
     <select id="getListByBlogId" resultType="com.fgrapp.blog.domain.ClassDo">
         select
-        id, name, createAt, createTime, updateAt, updateTime
+        id, name,isMain, createAt, createTime, updateAt, updateTime
         from func_class as fc
         left join func_blog_class as fbc
         on fc.id = fbc.classId

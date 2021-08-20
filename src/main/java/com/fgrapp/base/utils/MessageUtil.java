@@ -68,7 +68,7 @@ public class MessageUtil {
             SendSmsResponseBody body = sendSmsResponse.getBody();
             String bodyCode = body.getCode();
             //记录短信发送日志
-
+            insetMessageLog(body,phone,code);
             if (Constants.OK.equals(bodyCode)){
                 //调用成功
                 return true;

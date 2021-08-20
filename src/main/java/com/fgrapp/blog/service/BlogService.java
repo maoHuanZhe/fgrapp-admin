@@ -78,14 +78,14 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
                 log.info("新增博客分类:{}",className);
                 ClassDo classDo = ClassDo.builder().name(className).build();
                 classMapper.insert(classDo);
-                blogClassDos.add(new BlogClassDo(blogId,classDo.getId()));
+                blogClassDos.add(new BlogClassDo(blogId,classDo.getId(),0));
             });
         }
         //添加博客与分类关联
         List<Long> classIds = info.getClassIds();
         if (ObjectUtil.isNotNull(classIds)){
             log.info("添加已存在的分类与博客关联");
-            classIds.forEach(classId -> blogClassDos.add(new BlogClassDo(blogId,classId)));
+            classIds.forEach(classId -> blogClassDos.add(new BlogClassDo(blogId,classId,0)));
         }
         if (blogClassDos.size() > 0){
             int allBatch = blogClassMapper.insertBatch(blogClassDos);
@@ -97,8 +97,15 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
         //获取博客基本信息
         BlogDo blogDo = baseMapper.selectById(id);
         //获取博客分类信息
-        List<String> classNames = getClassNames(id);
+        List<ClassDo> classDoList = classMapper.getListByBlogId(id);
+        List<String> classNames = new ArrayList<>();
+        List<Long> classIds = new ArrayList<>();
+        classDoList.forEach(item ->{
+            classNames.add(item.getName());
+            classIds.add(item.getId());
+        });
         blogDo.setAddClassNames(classNames);
+        blogDo.setClassIds(classIds);
         return blogDo;
     }
 
@@ -126,14 +133,14 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
                 log.info("新增博客分类:{}",className);
                 ClassDo classDo = ClassDo.builder().name(className).build();
                 classMapper.insert(classDo);
-                blogClassDos.add(new BlogClassDo(blogId,classDo.getId()));
+                blogClassDos.add(new BlogClassDo(blogId,classDo.getId(),0));
             });
         }
         //添加博客与分类关联
         List<Long> classIds = info.getClassIds();
         if (ObjectUtil.isNotNull(classIds)){
             log.info("添加已存在的分类与博客关联");
-            classIds.forEach(classId -> blogClassDos.add(new BlogClassDo(blogId,classId)));
+            classIds.forEach(classId -> blogClassDos.add(new BlogClassDo(blogId,classId,0)));
         }
         if (blogClassDos.size() > 0){
             int allBatch = blogClassMapper.insertBatch(blogClassDos);
