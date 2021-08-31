@@ -1,5 +1,5 @@
 <template>
-  <el-container ref="container" style="overflow: auto;" class="container" >
+  <el-container ref="container"  class="container" >
     <el-backtop></el-backtop>
     <el-header class="site-nav" height="50px">
       <el-row type="flex" justify="center">
@@ -204,7 +204,8 @@
     *zoom: 1;
   }
   .site-nav .site-nav-bd {
-    width: 900px;
+    max-width: 900px;
+    width: 100%;
     height: 50px;
     background: #f5f5f5;
     -webkit-backface-visibility: hidden;
@@ -217,7 +218,8 @@
     background-size: cover;
   }
   .main{
-    width: 1190px;
+    max-width: 1190px;
+    width: 100%;
     margin: auto;
   }
   .login {
