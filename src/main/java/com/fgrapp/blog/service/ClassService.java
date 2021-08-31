@@ -9,6 +9,9 @@ import com.fgrapp.blog.dao.BlogClassMapper;
 import com.fgrapp.blog.dao.ClassMapper;
 import com.fgrapp.blog.domain.BlogClassDo;
 import com.fgrapp.blog.domain.ClassDo;
+import com.fgrapp.topic.dao.TopicClassMapper;
+import com.fgrapp.topic.domain.TopicClassDo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +28,10 @@ import java.util.Map;
 public class ClassService extends FgrService<ClassMapper, ClassDo> {
 
     private final BlogClassMapper blogClassMapper;
-
-    public ClassService(BlogClassMapper blogClassMapper) {
+    private final TopicClassMapper topicClassMapper;
+    public ClassService(BlogClassMapper blogClassMapper, TopicClassMapper topicClassMapper) {
         this.blogClassMapper = blogClassMapper;
+        this.topicClassMapper = topicClassMapper;
     }
 
     public IPage<List<Map<String, Object>>> getPage(Map<String, Object> map) {
@@ -49,5 +53,11 @@ public class ClassService extends FgrService<ClassMapper, ClassDo> {
         Long classId = list.get(0).getClassId();
         blogClassMapper.delete(new LambdaQueryWrapper<BlogClassDo>().eq(BlogClassDo::getClassId,classId));
         blogClassMapper.insertBatch(list);
+    }
+
+    public void topicSort(List<TopicClassDo> list) {
+        Long classId = list.get(0).getClassId();
+        topicClassMapper.delete(new LambdaQueryWrapper<TopicClassDo>().eq(TopicClassDo::getClassId,classId));
+        topicClassMapper.insertBatch(list);
     }
 }

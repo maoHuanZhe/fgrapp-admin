@@ -48,6 +48,25 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/topic',
+    component: BlogLayout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        component: (resolve) => require(['@/views/topic/list'], resolve)
+      },
+      {
+        path: 'class/:classId',
+        component: (resolve) => require(['@/views/topic/list'], resolve)
+      },
+      {
+        path: 'detail/:topicId',
+        component: (resolve) => require(['@/views/topic/detail/index'], resolve)
+      }
+    ]
+  },
+  {
     path: '/redirect',
     component: Layout,
     hidden: true,
@@ -116,6 +135,25 @@ export const constantRoutes = [
         component: (resolve) => require(['@/views/func/blog/add/index'], resolve),
         name: 'EditBlog',
         meta: { title: '修改文章'}
+      }
+    ]
+  },
+  {
+    path: '/func/topic',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'detail/:topicId',
+        component: (resolve) => require(['@/views/topic/detail/index'], resolve),
+        name: 'EditBlog',
+        meta: { title: '查看问题'}
+      },
+      {
+        path: 'edit/:topicId',
+        component: (resolve) => require(['@/views/func/topic/add/index'], resolve),
+        name: 'EditBlog',
+        meta: { title: '修改问题'}
       }
     ]
   },

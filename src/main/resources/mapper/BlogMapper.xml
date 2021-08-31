@@ -38,6 +38,7 @@
                 LEFT JOIN func_class AS fc ON fbc.classId = fc.id
                 LEFT JOIN func_blog_operate_num AS fbon ON fb.id = fbon.blogId
                 LEFT JOIN func_comment AS fco ON fb.id =fco.blogId
+                                             and fco.isAudit = 1
         <where>
             <if test="ew.classId != null and ew.classId != ''">
                 and classId = #{ew.classId}

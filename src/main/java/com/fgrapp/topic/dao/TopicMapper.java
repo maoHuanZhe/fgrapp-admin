@@ -1,10 +1,10 @@
-package com.fgrapp.blog.dao;
+package com.fgrapp.topic.dao;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fgrapp.base.dao.FgrMapper;
-import com.fgrapp.blog.domain.ClassDo;
+import com.fgrapp.topic.domain.TopicDo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -13,16 +13,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ClassMapper
+ * TopicMapper
  *
  * @author fan guang rui
- * @date 2021年08月12日 12:42
+ * @date 2021年08月26日 18:46
  */
 @Mapper
 @Component
-public interface ClassMapper extends FgrMapper<ClassDo> {
-    IPage<List<Map<String, Object>>> getPage(Page<ClassDo> paramPage,@Param(Constants.WRAPPER) Map<String, Object> map);
+public interface TopicMapper extends FgrMapper<TopicDo> {
+    IPage<List<Map<String, Object>>> getPage(Page<TopicDo> paramPage, @Param(Constants.WRAPPER) Map<String, Object> map);
 
-    List<ClassDo> getListByBlogId(Long id);
-    List<ClassDo> getListByTopicId(Long id);
+    void dels(Long id);
+
+    IPage<List<Map<String, Object>>> getTopicPage(Page<TopicDo> paramPage, @Param(Constants.WRAPPER) Map<String, Object> map);
 }

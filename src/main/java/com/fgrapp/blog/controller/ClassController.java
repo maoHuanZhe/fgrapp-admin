@@ -9,6 +9,7 @@ import com.fgrapp.base.result.ResponseResultBody;
 import com.fgrapp.blog.domain.BlogClassDo;
 import com.fgrapp.blog.domain.ClassDo;
 import com.fgrapp.blog.service.ClassService;
+import com.fgrapp.topic.domain.TopicClassDo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cache.annotation.CacheConfig;
@@ -84,6 +85,14 @@ public class ClassController extends FgrController {
     @Log(title = "博客分类信息", businessType = BusinessType.UPDATE)
     public void blogSort(@RequestBody List<BlogClassDo> list){
         service.blogSort(list);
+    }
+
+    @PutMapping("topicSort")
+    @ApiOperation("修改分类下问题排序")
+    @SaCheckPermission("func:class:edit")
+    @Log(title = "分类信息", businessType = BusinessType.UPDATE)
+    public void topicSort(@RequestBody List<TopicClassDo> list){
+        service.topicSort(list);
     }
 
     @DeleteMapping("/{ids}")

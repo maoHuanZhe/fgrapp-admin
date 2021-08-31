@@ -48,15 +48,13 @@ public class SysUserDo extends BaseDo {
     @ApiModelProperty(value = "密码")
     private String password;
 
-    @ApiModelProperty(value = "盐加密")
-    @TableField(exist = false)
-    private String salt;
-
     @ApiModelProperty(value = "帐号状态（0正常 1停用）")
     private String status;
 
     @ApiModelProperty(value = "删除标志（0代表存在 2代表删除）")
     private String delFlag;
+    @ApiModelProperty(value = "微信编号")
+    private String openId;
 
     @ApiModelProperty(value = "最后登录IP")
     private String loginIp;

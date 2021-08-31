@@ -157,14 +157,18 @@
           //登陆或注册
           store.commit('SET_SHOWREGISTER', false)
         },
-          handleSelect(key, keyPath) {
-            if (key === 'home'){
-              return this.$router.push("/blog");
-            }
-            if (this.$route.params.classId !== key){
-              this.$router.push("/blog/class/" + parseInt(key));
-            }
+        handleSelect(key) {
+          let prefix = "/blog";
+          if (this.$route.path.startsWith("/topic")){
+            prefix = "/topic";
           }
+          if (key === 'home'){
+            return this.$router.push(prefix);
+          }
+          if (this.$route.params.classId !== key){
+            this.$router.push(prefix+"/class/" + parseInt(key));
+          }
+        }
         }
     }
 </script>

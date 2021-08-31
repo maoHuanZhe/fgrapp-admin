@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.topic.dao.TopicOperateNumMapper">
+    <update id="updateReadNum">
+        update func_topic_operate_num set readNum = readNum+1
+        where topicId = #{topicId}
+    </update>
+    <update id="updateLickNum">
+        update func_topic_operate_num set likeNum = likeNum + ${num}
+        where topicId = #{topicId}
+    </update>
+    <update id="updateCollectNum">
+        update func_topic_operate_num set collectNum = collectNum + ${num}
+        where topicId = #{topicId}
+    </update>
+</mapper>

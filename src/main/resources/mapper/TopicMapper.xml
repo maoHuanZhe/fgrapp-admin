@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.topic.dao.TopicMapper">
+    <delete id="dels">
+        DELETE
+            ft,fbc,fbon
+        FROM
+            func_topic ft
+                LEFT JOIN func_topic_class fbc ON ft.id  = fbc.topicId
+                LEFT JOIN func_topic_operate_num fbon ON ft.id = fbon.topicId
+        WHERE
+            ft.id = #{id}
+    </delete>
+    <select id="getPage" resultType="java.util.Map">
+        select
+            id, problem, createTime, createAt, updateTime, updateAt
+        from func_topic
+        <where>
+            <if test="ew.problem != null and ew.problem != ''">
+                and problem like concat('%', #{ew.problem}, '%')
+            </if>
+            <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(createTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+            </if>
+            <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    <select id="getTopicPage" resultType="java.util.Map">
+        SELECT GROUP_CONCAT( DISTINCT fc.name) AS classNames,
+        fbon.readNum,fbon.likeNum,fbon.collectNum,
+        COUNT(DISTINCT ftc.id) AS commentNum,
+        ft.id, ft.problem, ft.createTime, ft.createAt
+        FROM func_topic AS ft
+        LEFT JOIN func_topic_class AS fbc ON ft.id = fbc.topicId
+        LEFT JOIN func_class AS fc ON fbc.classId = fc.id
+        LEFT JOIN func_topic_operate_num AS fbon ON ft.id = fbon.topicId
+        LEFT JOIN func_topic_comment ftc ON ft.id = ftc.topicId
+                                                and ftc.isAudit = 1
+        <where>
+            <if test="ew.classId != null and ew.classId != ''">
+                and classId = #{ew.classId}
+            </if>
+            <if test="ew.problem != null and ew.problem != ''">
+                and problem like concat('%', #{ew.problem}, '%')
+            </if>
+            <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(ft.createTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+            </if>
+            <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(ft.createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+            </if>
+        </where>
+        GROUP BY ft.id
+        order by
+        <if test="ew.classId != null and ew.classId != ''">
+            sortNum asc,
+        </if>
+        ft.id desc
+    </select>
+</mapper>

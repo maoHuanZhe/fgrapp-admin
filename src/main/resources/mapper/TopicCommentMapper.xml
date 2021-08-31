@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fgrapp.topic.dao.TopicCommentMapper">
+    <select id="getPage" resultType="java.util.Map">
+        select fc.id, topicId, parentId, fc.content, isAudit, fc.createAt, fc.createTime, fc.updateAt, fc.updateTime,
+        fb.problem
+        from func_topic_comment fc
+        left join func_topic fb
+        on fc.topicId = fb.id
+        <where>
+            <if test="ew.isAudit != null and ew.isAudit != ''">
+                and fc.isAudit = #{ew.isAudit}
+            </if>
+            <if test="ew.content != null and ew.content != ''">
+                and fc.content like concat('%', #{ew.content}, '%')
+            </if>
+            <if test="ew.beginTime != null and ew.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(fc.createTime,'%y%m%d') &gt;= date_format(#{ew.beginTime},'%y%m%d')
+            </if>
+            <if test="ew.endTime != null and ew.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(fc.createTime,'%y%m%d') &lt;= date_format(#{ew.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+</mapper>

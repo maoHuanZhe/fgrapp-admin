@@ -11,7 +11,7 @@ const whiteList = ['/login', '/auth-redirect', '/bind', '/register', '/blog']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  if (to.path.startsWith("/blog")){
+  if (to.path.startsWith("/blog") || to.path.startsWith("/topic")){
     //博客部分页面 直接继续不校验任何东西
     return  next();
   }

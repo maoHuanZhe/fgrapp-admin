@@ -43,6 +43,13 @@ export function blogSort(data) {
     data: data
   })
 }
+export function topicSort(data) {
+  return request({
+    url: '/func/class/topicSort',
+    method: 'put',
+    data: data
+  })
+}
 
 export function dels(ids) {
   return request({

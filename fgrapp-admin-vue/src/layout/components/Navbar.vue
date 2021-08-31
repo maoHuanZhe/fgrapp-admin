@@ -9,6 +9,9 @@
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
+        <el-tooltip content="题库地址" effect="dark" placement="bottom">
+          <fgrapp-topic class="right-menu-item hover-effect" />
+        </el-tooltip>
         <el-tooltip content="博客地址" effect="dark" placement="bottom">
           <fgrapp-blog class="right-menu-item hover-effect" />
         </el-tooltip>
@@ -60,6 +63,7 @@ import Search from '@/components/HeaderSearch'
 import FgrappGit from '@/components/Fgrapp/Git'
 import FgrappDoc from '@/components/Fgrapp/Doc'
 import FgrappBlog from '@/components/Fgrapp/Blog'
+import FgrappTopic from '@/components/Fgrapp/Topic'
 
 export default {
   components: {
@@ -70,6 +74,7 @@ export default {
     SizeSelect,
     Search,
     FgrappBlog,
+    FgrappTopic,
     FgrappGit,
     FgrappDoc
   },

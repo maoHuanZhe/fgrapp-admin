@@ -18,15 +18,7 @@
     white-space: normal;
     word-break: break-word;
     display: -webkit-box;">
-            {{item.title}}</div>
-          <div style="color: #555666;
-    margin-top: 8px;
-    line-height: 24px;
-    overflow: hidden;
-    white-space: normal;
-    word-break: break-word;
-    display: -webkit-box;">
-            {{item.summary}}
+            {{item.problem}}
           </div>
           <div style="margin-top: 8px;">
             <el-tag v-for="(name,index) in item.classNames" :key="index +'class'+item.id" size="mini" style="margin-right: 10px;">{{name}}</el-tag>
@@ -42,6 +34,10 @@
             <span style="margin-right: 10px;">
         <svg-icon icon-class='like'/>
           {{item.likeNum}} 点赞</span>
+            <!--   收藏数   -->
+            <span style="margin-right: 10px;">
+        <svg-icon icon-class='rate'/>
+          {{item.collectNum}} 收藏</span>
             <!--   评论数   -->
             <span style="margin-right: 10px;">
           <svg-icon icon-class='message'/>
@@ -54,7 +50,7 @@
 </template>
 
 <script>
-    import {page} from "@/api/blog";
+    import {page} from "@/api/topic";
 
     export default {
         name: "list",
@@ -91,6 +87,7 @@
         }
       },
       created(){
+        document.title = "FGRAPP-Topic";
           // 获取分类编号
         const classId = this.$route.params && this.$route.params.classId;
         if (classId){
@@ -118,7 +115,7 @@
             })
           },
         toDeatil(id){
-          this.$router.push("/blog/detail/" + id);
+          this.$router.push("/topic/detail/" + id);
         }
       }
     }

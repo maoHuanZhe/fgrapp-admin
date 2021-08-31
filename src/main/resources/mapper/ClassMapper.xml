@@ -28,4 +28,12 @@
         on fc.id = fbc.classId
         where fbc.blogId = #{id}
     </select>
+    <select id="getListByTopicId" resultType="com.fgrapp.blog.domain.ClassDo">
+        select
+            id, name,isMain, createAt, createTime, updateAt, updateTime
+        from func_class as fc
+                 left join func_topic_class as ftc
+                           on fc.id = ftc.classId
+        where ftc.topicId = #{id}
+    </select>
 </mapper>
