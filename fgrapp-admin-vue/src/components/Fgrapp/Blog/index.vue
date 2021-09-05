@@ -9,7 +9,7 @@ export default {
   name: 'blog',
   data() {
     return {
-      url: '/blog'
+      url: 'https://blog.fgrapp.com'
     }
   },
   methods: {

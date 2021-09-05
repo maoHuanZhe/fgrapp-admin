@@ -1,4 +1,11 @@
 import request from '@/utils/request'
+export function topicSort(data) {
+  return request({
+    url: '/func/class/topicSort',
+    method: 'put',
+    data: data
+  })
+}
 // 查询列表
 export function page(query) {
   return request({

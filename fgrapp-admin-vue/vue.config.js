@@ -5,7 +5,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = 'FGRAPP-Admin' // 网页标题
+const name = process.env.VUE_APP_TITLE || 'FGRAPP' // 网页标题
 
 const port = process.env.port || process.env.VUE_APP_PORT || 80 // 端口
 

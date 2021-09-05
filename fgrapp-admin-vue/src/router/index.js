@@ -5,8 +5,6 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-/* BlogLayout */
-import BlogLayout from '@/layout/BlogLayout'
 
 /**
  * Note: 路由配置项
@@ -28,44 +26,6 @@ import BlogLayout from '@/layout/BlogLayout'
 
 // 公共路由
 export const constantRoutes = [
-  {
-    path: '/blog',
-    component: BlogLayout,
-    hidden: true,
-    children: [
-      {
-        path: '',
-        component: (resolve) => require(['@/views/blog/list'], resolve)
-      },
-      {
-        path: 'class/:classId',
-        component: (resolve) => require(['@/views/blog/list'], resolve)
-      },
-      {
-        path: 'detail/:blogId',
-        component: (resolve) => require(['@/views/blog/detail/index'], resolve)
-      }
-    ]
-  },
-  {
-    path: '/topic',
-    component: BlogLayout,
-    hidden: true,
-    children: [
-      {
-        path: '',
-        component: (resolve) => require(['@/views/topic/list'], resolve)
-      },
-      {
-        path: 'class/:classId',
-        component: (resolve) => require(['@/views/topic/list'], resolve)
-      },
-      {
-        path: 'detail/:topicId',
-        component: (resolve) => require(['@/views/topic/detail/index'], resolve)
-      }
-    ]
-  },
   {
     path: '/redirect',
     component: Layout,
@@ -95,10 +55,10 @@ export const constantRoutes = [
   {
     path: '',
     component: Layout,
-    redirect: 'admin',
+    redirect: '',
     children: [
       {
-        path: 'admin',
+        path: '',
         component: (resolve) => require(['@/views/index'], resolve),
         name: '首页',
         meta: { title: '首页', icon: 'dashboard', noCache: true, affix: true }
@@ -125,12 +85,6 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: 'detail/:blogId',
-        component: (resolve) => require(['@/views/blog/detail/index'], resolve),
-        name: 'EditBlog',
-        meta: { title: '查看文章'}
-      },
-      {
         path: 'edit/:blogId',
         component: (resolve) => require(['@/views/func/blog/add/index'], resolve),
         name: 'EditBlog',
@@ -143,12 +97,6 @@ export const constantRoutes = [
     component: Layout,
     hidden: true,
     children: [
-      {
-        path: 'detail/:topicId',
-        component: (resolve) => require(['@/views/topic/detail/index'], resolve),
-        name: 'EditBlog',
-        meta: { title: '查看问题'}
-      },
       {
         path: 'edit/:topicId',
         component: (resolve) => require(['@/views/func/topic/add/index'], resolve),

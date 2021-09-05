@@ -7,14 +7,11 @@ import { getToken } from '@/utils/auth'
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login', '/auth-redirect', '/bind', '/register', '/blog']
+const whiteList = ['/login', '/auth-redirect', '/bind', '/register']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  if (to.path.startsWith("/blog") || to.path.startsWith("/topic")){
-    //博客部分页面 直接继续不校验任何东西
-    return  next();
-  }
+  window._hmt.push(['_trackPageview', '/#' + to.fullPath])
   if (getToken()) {
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     /* has token*/

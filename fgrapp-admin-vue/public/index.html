@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="icon" href="./static/img/logo.png">
-    <title>FGRAPP-Admin</title>
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title><%= webpackConfig.name %></title>
     <!--[if lt IE 11]><script>window.location.href='/html/ie.html';</script><![endif]-->
 	  <style>
     html,
@@ -194,6 +194,9 @@
       opacity: 0.5;
     }
   </style>
+    <script>
+      let _hmt = _hmt || [];
+    </script>
   </head>
   <body>
     <div id="app">
@@ -204,5 +207,13 @@
 		    <div class="load_title">正在加载系统资源，请耐心等待</div>
         </div>
 	</div>
+    <script>
+      (function() {
+        let hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?5ef9bf35e3ba8da17a36650a4252cc75";
+        let s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
   </body>
 </html>

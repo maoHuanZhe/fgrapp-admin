@@ -148,7 +148,7 @@
       },
       /** 查看按钮操作 */
       detail(row) {
-        this.$router.push("/func/topic/detail/" + row.id);
+        window.open("https://topic.fgrapp.com/detail/"+row.id)
       },
       /** 删除按钮操作 */
       handleDelete(row) {

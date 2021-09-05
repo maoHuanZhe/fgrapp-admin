@@ -9,7 +9,7 @@ export default {
   name: 'topic',
   data() {
     return {
-      url: '/topic'
+      url: 'https://topic.fgrapp.com'
     }
   },
   methods: {
