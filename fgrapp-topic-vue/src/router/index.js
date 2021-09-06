@@ -24,6 +24,10 @@ const routes = [
         component: (resolve) => require(['@/views/topic/detail/index'], resolve)
       }
     ]
+  },
+  {
+    path: '*',
+    redirect: '/',
   }
 ]
 
@@ -34,7 +38,6 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  window._hmt.push(['_trackPageview', '/#' + to.fullPath])
   next();
 });
 router.afterEach(() => {
