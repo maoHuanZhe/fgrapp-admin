@@ -7,7 +7,7 @@ spring:
     # 发送者邮箱
     username: mail_fanguangrui@163.com
     # 配置密码，注意不是真正的密码，而是刚刚申请到的授权码
-    password: AFTLKFLUGEUXVQRF
+    password: ...
     # 端口号465或者994
     port: 465
     # 默认的邮件编码为UTF-8
@@ -26,9 +26,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
     druid:
-      url: jdbc:p6spy:mysql://47.98.228.27:3306/fgrapp?useUnicode=true&characterEncoding=utf-8&useSSL=false
-      username: root
-      password: 633664
+      url: jdbc:p6spy:mysql://localhoat:3306/fgrapp?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: ...
+      password: ...
       # 初始连接数
       initialSize: 5
       # 最小连接池数量
@@ -71,13 +71,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 47.98.228.27
+    host: localhsot
     # 端口，默认为6379
     port: 6379
     # 数据库索引
     database: 0
     # 密码
-    password: 633664
+    password: ...
     # 连接超时时间（毫秒）
     timeout: 10000ms
     lettuce:
@@ -169,22 +169,22 @@ fgr:
   # 获取ip地址开关
   addressEnabled: false
   # goFastUrl
-  goFastUrl: http://47.98.228.27:8003/bill/
+  goFastUrl: http://localhost:8003/bill/
   #captchTtype
   captchTtype: math
   # 非对称加密私钥
-  privateKey: MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAw1GFF1XsEjgw3lu4HYPKPr51I4SlrqMKIkRO0G3B9O5aV6urN2DG8UkcouscOxwJqAdjVfXBeHn30sTR+zadDwIDAQABAkBSUjuMGFTFYRWHwpSZLADD7TYl4DSMpH8S7kNhqcED3+y4NgDFEPe9+rqe6a3ZWLtF6WPMpA5YOskwivR92N+xAiEA9W3ahXwM0qMAVbhy+Saxq2RIJgyIpKJyJKsqVxiENyUCIQDLuyMC94j/KLnguKRR1iEbwG6l1EyEbkr8Z0Xo0JfXIwIgEzQtTRSPzEuE0zBDjstAS7DlFFUWvAsZ81SRU49PiSECIAup4w9AbK9u/XVIHOAyiiK0maEUzmymg9R/dRknGApRAiEAuFTLJn878N9CHHTqbe+PPgbQJ3oSkbq9DktLEUIEJYM=
+  privateKey: ...
   #阿里云配置
   ali:
-    accessKeyId: LTAI5tN8HDAPY54Af22EoRTi
-    accessKeySecret: DCcPaYSVAhqlUKKOEaTVz6U4AEAMFa
+    accessKeyId: ...
+    accessKeySecret: ...
     endpoint: dysmsapi.aliyuncs.com
     message:
       signName: FGRAPP
-      templateCode: SMS_222341430
+      templateCode: ...
   wechat:
-    appId: wxcd1d2e975606b55b
-    appSecret: 9e7790a817eed53dbe2234056424a7fe
+    appId: ...
+    appSecret: ...
 # Sa-Token配置
 sa-token:
   # token名称 (同时也是cookie名称)
