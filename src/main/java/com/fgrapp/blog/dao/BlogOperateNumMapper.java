@@ -17,4 +17,6 @@ import org.springframework.stereotype.Component;
 public interface BlogOperateNumMapper extends FgrMapper<BlogOperateNumDo> {
     void updateReadNum(Long blogId);
     void updateLickNum(@Param("blogId") Long blogId, @Param("num") int num);
+
+    void updateCollectNum(@Param("blogId") Long blogId, @Param("num") int num);
 }

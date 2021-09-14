@@ -9,4 +9,8 @@
         update func_blog_operate_num set likeNum = likeNum + ${num}
         where blogId = #{blogId}
     </update>
+    <update id="updateCollectNum">
+        update func_blog_operate_num set collectNum = collectNum + ${num}
+        where blogId = #{blogId}
+    </update>
 </mapper>

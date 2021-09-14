@@ -1,0 +1,6 @@
+/* components/comment/index.wxss */
+@import "../../lib/colorUI/main.wxss";
+@import "../../lib/colorUI/icon.wxss";
+.cu-list.menu-avatar.comment>.cu-item {
+  padding: 30rpx;
+}

@@ -77,6 +77,10 @@ public class SysLoginService {
             logininforService.saveLog(loginBody.getUsername(),Constants.FAIL,"验证码错误");
             throw new ResultException("验证码错误");
         }
+        return loginOfPassward(loginBody);
+    }
+
+    public String loginOfPassward(LoginBody loginBody) {
         //校验用户名与密码
         String username = loginBody.getUsername();
         SysUserDo user = userService.selectUserByUserName(username);
@@ -100,7 +104,7 @@ public class SysLoginService {
         password = FgrUtil.encryptionPassword(decrypt, privateKey);
         if (!user.getPassword().equals(password)){
             log.info("登录用户：{} 密码输入错误.", username);
-            logininforService.saveLog(loginBody.getUsername(),Constants.FAIL,"密码输入错误");
+            logininforService.saveLog(loginBody.getUsername(), Constants.FAIL,"密码输入错误");
             throw new ResultException("密码输入错误");
         }
         return userLogin(user);

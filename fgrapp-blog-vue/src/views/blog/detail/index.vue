@@ -1,7 +1,10 @@
 <template>
   <div class="mavonEditor">
-    <el-backtop :visibility-height="0"  :bottom="100">
+    <el-backtop :visibility-height="0"  :bottom="150">
       <div style="    width: 50px;">
+        <div @click.stop="switchDefilePre" class="rightDiv">
+          <svg-icon  icon-class="left"/>
+        </div>
         <div @click.stop="likeClike" class="rightDiv">
           <svg-icon  :icon-class="operateNum.canLike?'like':'likefill'"/>
         </div>
@@ -20,6 +23,9 @@
         </div>
         <div @click.stop="topicClick" class="rightDiv" style="color: #1989fa;">
           题
+        </div>
+        <div @click.stop="switchDefileNext" class="rightDiv">
+          <svg-icon  icon-class="right"/>
         </div>
         <div class="rightDiv" style="color: #1989fa;">
           UP
@@ -112,15 +118,32 @@
     },
     created(){
       const id = this.$route.params && this.$route.params.blogId;
-      this.blogId = id;
-      getDetailInfo(id).then(({data}) => {
-        this.form = data.blog;
-        this.commentList = this.getRootList(data.commentDos);
-        this.commentNum = data.commentDos.length;
-        this.operateNum = data.operateNum;
-      })
+      this.getInfo(id);
     },
     methods:{
+        switchDefilePre(){
+            if (this.index === 0){
+                return this.$message.warning("已经是分类内第一篇了")
+            }
+            this.getInfo(this.ids[this.index-1])
+        },
+        switchDefileNext(){
+            if (this.index === (this.ids.length -1)){
+                return this.$message.warning("已经是分类内最后一篇了")
+            }
+            this.getInfo(this.ids[this.index+1])
+        },
+        getInfo(id){
+            this.blogId = id;
+            getDetailInfo(id).then(({data}) => {
+                this.ids = data.ids;
+                this.index= data.ids.indexOf(data.blog.id);
+                this.form = data.blog;
+                this.commentList = this.getRootList(data.commentDos);
+                this.commentNum = data.commentDos.length;
+                this.operateNum = data.operateNum;
+            })
+        },
         topicClick(){
             window.open('https://topic.fgrapp.com/class/'+this.form.classIds[0])
         },

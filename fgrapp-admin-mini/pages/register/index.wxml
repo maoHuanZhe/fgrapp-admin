@@ -1,0 +1,116 @@
+<!--pages/register/index.wxml-->
+<cu-custom isBack="{{true}}"><view slot="backText">返回</view>
+  <text slot="content" class="text-black text-bold">注册登录</text>
+</cu-custom>
+<scroll-view scroll-x class="bg-white nav">
+  <view class="flex text-center">
+    <view class="cu-item flex-sub {{1==TabCur?'text-orange cur':''}}" bindtap="tabSelect" data-id="1">
+      账号密码
+    </view>
+    <view class="cu-item flex-sub {{2==TabCur?'text-orange cur':''}}" bindtap="tabSelect" data-id="2">
+      短信验证码
+    </view>
+    <view class="cu-item flex-sub {{3==TabCur?'text-orange cur':''}}" bindtap="tabSelect" data-id="3">
+      邮件验证码
+    </view>
+  </view>
+</scroll-view>
+
+<view class="margin-top">
+  <view wx:if="{{ TabCur == 1 }}">
+    <form>
+      <van-field
+        model:value="{{ username }}"
+        required
+        clearable
+        label="用户名"
+        placeholder="请输入用户名"
+      />
+      <van-field
+      model:value="{{ password }}"
+        type='{{show?"password":"text"}}'
+        label="密码"
+        placeholder="请输入密码"
+        required
+        border="{{ false }}"
+        right-icon='{{show?"browsing-history-o":"closed-eye"}}'
+        bind:click-icon="swichType"
+      />
+    </form>
+  </view>
+  <view wx:if="{{ TabCur == 2 }}">
+    <form>
+      <van-field
+      required
+      model:value="{{ phone }}"
+        label="手机号"
+        placeholder="请输入手机号"
+        border="{{ false }}"
+      />
+      <van-field
+      required
+      model:value="{{ sms }}"
+        center
+        clearable
+        label="短信验证码"
+        placeholder="请输入短信验证码"
+        border="{{ false }}"
+        use-button-slot
+      >
+        <van-button bindtap="showCaptcha" slot="button" size="small" type="primary">
+          发送验证码
+        </van-button>
+      </van-field>
+    </form>
+  </view>
+  <view wx:if="{{ TabCur == 3 }}">
+    <form>
+      <van-field
+      required
+        model:value="{{ email }}"
+        bind:change="emailChange"
+        label="邮箱地址"
+        placeholder="请输入邮箱地址"
+        border="{{ false }}"
+      />
+      <van-field
+      required
+        model:value="{{ code }}"
+        center
+        clearable
+        label="邮箱验证码"
+        bind:change="codeChange"
+        placeholder="请输入邮箱验证码"
+        border="{{ false }}"
+        use-button-slot
+      >
+        <van-count-down slot="button" wx:if="{{ downing }}"
+            class="control-count-down"
+            millisecond
+            time="{{ 60000 }}"
+            auto-start="{{ false }}"
+            format="ss"
+            bind:finish="finished"
+          />
+        <van-button wx:else  bindtap="showCaptcha" slot="button" size="small" type="primary">
+          {{ sendTime>0?"重新发送":"发送验证码" }}
+        </van-button>
+      </van-field>
+    </form>
+  </view>
+  <view class="margin-xl">
+    <van-button bindtap="buttonSubmit" type="primary" block>
+      登录/注册
+    </van-button>
+  </view>
+  <van-divider
+  contentPosition="center"
+  customStyle="color: #1989fa; border-color: #1989fa; font-size: 18px;"
+>
+  快捷方式登录
+</van-divider>
+  <view class="margin-xl">
+    <button class="cu-btn bg-green" bindtap="getUserProfile">微信登录</button>
+  </view>
+</view>
+<aj-captcha class="demo1" opt="{{captchaOpt1}}"></aj-captcha>

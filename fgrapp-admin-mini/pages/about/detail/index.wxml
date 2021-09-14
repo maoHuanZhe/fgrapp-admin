@@ -1,0 +1,5 @@
+<!--pages/about/detail/index.wxml-->    
+<cu-custom isBack="{{true}}"><view slot="backText">返回</view><view slot="content">个人信息</view></cu-custom>
+<van-button bindtap="buttonSubmit" type="primary" block>
+      登出
+  </van-button>

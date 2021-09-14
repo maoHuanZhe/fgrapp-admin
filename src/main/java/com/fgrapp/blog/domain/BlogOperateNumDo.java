@@ -26,6 +26,9 @@ public class BlogOperateNumDo {
     private Long blogId;
     private Long readNum;
     private Long likeNum;
+    private Long collectNum;
     @TableField(exist = false)
     private boolean canLike;
+    @TableField(exist = false)
+    private boolean canCollect;
 }

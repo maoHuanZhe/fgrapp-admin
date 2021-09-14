@@ -1,12 +1,13 @@
 package com.fgrapp.blog.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fgrapp.base.controller.FgrController;
+import com.fgrapp.base.limit.ServiceLimit;
 import com.fgrapp.base.log.BusinessType;
 import com.fgrapp.base.log.Log;
 import com.fgrapp.base.result.ResponseResultBody;
 import com.fgrapp.blog.domain.BlogDo;
+import com.fgrapp.blog.domain.BlogOperateNumDo;
 import com.fgrapp.blog.domain.CommentDo;
 import com.fgrapp.blog.service.BlogService;
 import com.fgrapp.blog.service.CommentService;
@@ -18,7 +19,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,10 +44,11 @@ public class PageController extends FgrController {
 
     @GetMapping("list")
     @ApiOperation("获取博客分页数据(博客页面显示)")
-    public IPage<List<Map<String,Object>>> page(@RequestParam Map<String,Object> map){
+    public Map<String,Object> page(@RequestParam Map<String,Object> map){
         return service.getBlogPage(map);
     }
 
+//    @ServiceLimit(limitType = ServiceLimit.LimitType.IP)
     @GetMapping("/{id}")
     @ApiOperation("根据编号获取博客详细信息")
     @Cacheable(unless = "#result == null")
@@ -64,8 +65,14 @@ public class PageController extends FgrController {
     @SaCheckLogin
     @PutMapping("/operateNum/{id}/{num}")
     @ApiOperation("博客点赞与取消点赞操作")
-    public void updateLickNum(@PathVariable Long id,@PathVariable int num){
-        service.updateLickNum(id,num);
+    public BlogOperateNumDo updateLickNum(@PathVariable Long id,@PathVariable int num){
+        return service.updateLickNum(id,num);
+    }
+    @SaCheckLogin
+    @PutMapping("/operateNum/collect/{id}/{num}")
+    @ApiOperation("博客收藏与取消收藏操作")
+    public BlogOperateNumDo updateCollectNum(@PathVariable Long id,@PathVariable int num){
+        return service.updateCollectNum(id,num);
     }
 
     @PostMapping

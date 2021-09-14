@@ -1,13 +1,13 @@
-server:
-  port: 9657
 spring:
+  profiles:
+    active: dev
   mail:
     # 配置 SMTP 服务器地址
     host: smtp.163.com
     # 发送者邮箱
     username: mail_fanguangrui@163.com
     # 配置密码，注意不是真正的密码，而是刚刚申请到的授权码
-    password:
+    password: AFTLKFLUGEUXVQRF
     # 端口号465或者994
     port: 465
     # 默认的邮件编码为UTF-8
@@ -108,6 +108,39 @@ logging:
     com.fgrapp: debug
     org.springframework: warn
 
+aj:
+  captcha:
+    # 缓存local/redis...
+    cache-type: redis
+    # 滑动验证，底图路径，不配置将使用默认图片
+    #点击验证，底图路径，不配置将使用默认图片
+    #    pic-click: classpath:/captchaImage
+    # 右下角水印文字
+    water-mark: FGRAPP
+    # 校验滑动拼图允许误差偏移量(默认5像素)
+    slip-offset: 5
+    # aes加密坐标开启或者禁用(true|false)
+    aes-status: true
+    # 滑动干扰项(0/1/2)
+    interference-options: 0
+    # 历史数据清除开关
+    history-data-clear-enable: true
+    jigsaw: classpath:/captchaImage/jigsaw
+    # 验证码类型default两种都实例化。
+    type: blockpuzzle
+    # 接口请求次数一分钟限制是否开启 true|false
+    req-frequency-limit-enable: false
+    # 验证失败5次，get接口锁定
+    req-get-lock-limit: 5
+    # 验证失败后，锁定时间间隔,s
+    req-get-lock-seconds: 360
+    # get接口一分钟内请求数限制
+    req-get-minute-limit: 30
+    # check接口一分钟内请求数限制
+    req-check-minute-limit: 60
+    # verify接口一分钟内请求数限制
+    req-verify-minute-limit: 60
+
 fgr:
   swagger:
     enabled: true
@@ -124,7 +157,7 @@ fgr:
   # 名称
   name: FGRAPP
   # ip
-  ip: 47.98.228.27
+  ip: server.fgrapp.com
   # GitHub
   gtihub: https://github.com/maoHuanZhe/fgrapp-admin
   # 版权年份
@@ -141,7 +174,17 @@ fgr:
   captchTtype: math
   # 非对称加密私钥
   privateKey: MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAw1GFF1XsEjgw3lu4HYPKPr51I4SlrqMKIkRO0G3B9O5aV6urN2DG8UkcouscOxwJqAdjVfXBeHn30sTR+zadDwIDAQABAkBSUjuMGFTFYRWHwpSZLADD7TYl4DSMpH8S7kNhqcED3+y4NgDFEPe9+rqe6a3ZWLtF6WPMpA5YOskwivR92N+xAiEA9W3ahXwM0qMAVbhy+Saxq2RIJgyIpKJyJKsqVxiENyUCIQDLuyMC94j/KLnguKRR1iEbwG6l1EyEbkr8Z0Xo0JfXIwIgEzQtTRSPzEuE0zBDjstAS7DlFFUWvAsZ81SRU49PiSECIAup4w9AbK9u/XVIHOAyiiK0maEUzmymg9R/dRknGApRAiEAuFTLJn878N9CHHTqbe+PPgbQJ3oSkbq9DktLEUIEJYM=
-
+  #阿里云配置
+  ali:
+    accessKeyId: LTAI5tN8HDAPY54Af22EoRTi
+    accessKeySecret: DCcPaYSVAhqlUKKOEaTVz6U4AEAMFa
+    endpoint: dysmsapi.aliyuncs.com
+    message:
+      signName: FGRAPP
+      templateCode: SMS_222341430
+  wechat:
+    appId: wxcd1d2e975606b55b
+    appSecret: 9e7790a817eed53dbe2234056424a7fe
 # Sa-Token配置
 sa-token:
   # token名称 (同时也是cookie名称)
@@ -159,3 +202,6 @@ sa-token:
   # 是否输出操作日志
   is-log: true
   token-prefix: Bearer
+  # 写入Cookie时显式指定的作用域, 用于单点登录二级域名共享Cookie
+  cookie-domain: fgrapp.com
+

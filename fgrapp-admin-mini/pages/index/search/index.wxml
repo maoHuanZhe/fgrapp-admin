@@ -1,0 +1,31 @@
+<!--pages/index/search/index.wxml-->
+<cu-custom isCustom="{{true}}">
+  <text slot="content" class="text-black text-bold">FGRAPP</text>
+</cu-custom>
+<view class="box">
+  <view class="cu-bar search bg-white">
+    <view class="search-form round">
+      <text class="cuIcon-search"></text>
+      <input type="text" model:value="{{title}}" focus placeholder="搜索博客、题目" confirm-type="search" bindconfirm="handleConfirm"></input>
+    </view>
+  </view>
+</view>
+<view class="cu-card article" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" data-type="{{item.TYPE}}" bindtap="cardClick">
+  <view class="cu-item shadow">
+    <view class="title">
+      <view class="text-cut">{{item.content}}</view>
+    </view>
+    <view class="content">
+      <view class="desc">
+        <view class="text-gray text-sm flex justify-between margin-top-xs">
+          {{item.createTime}}
+          <view class="text-gray text-sm">
+            <view wx:if="{{item.TYPE === 1}}" class="cu-tag line-red sm">博客</view>
+            <view wx:else class="cu-tag line-purple sm">题目</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+<view wx:if="{{list.length > 0}}" class="cu-load bg-grey {{list.length < total ? 'loading':'over'}}"></view>

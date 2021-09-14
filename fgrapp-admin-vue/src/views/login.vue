@@ -46,6 +46,14 @@
         </el-button>
       </el-form-item>
     </el-form>
+    <Verify
+      @success="success"
+    mode="pop"
+    captchaType="blockPuzzle"
+    :imgSize="{ width: '330px', height: '155px' }"
+    ref="verify"
+    ></Verify>
+    <button @click="useVerify">调用验证组件</button>
     <!--  底部  -->
     <div class="el-login-footer">
       <span>Copyright © 2021 fgrapp.com All Rights Reserved.</span>
@@ -58,8 +66,14 @@ import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
 
+//引入组件
+import Verify from "@/components/verifition/Verify";
+
 export default {
   name: "Login",
+  components: {
+    Verify
+  },
   data() {
     return {
       codeUrl: "data:image/gif;base64,",
@@ -98,6 +112,12 @@ export default {
     this.getCookie();
   },
   methods: {
+    success(params){
+      console.log(params);
+    },
+    useVerify(){
+      this.$refs.verify.show()
+    },
     getCode() {
       getCodeImg().then(res => {
         this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;

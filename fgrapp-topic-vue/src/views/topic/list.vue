@@ -103,6 +103,7 @@
           getList(){
             //获取博客列表
             page(this.queryParams).then(({data})=>{
+                data = data.page
               data.records.forEach(item=>{
                 if (item.classNames){
                   item.classNames = item.classNames.split(",")

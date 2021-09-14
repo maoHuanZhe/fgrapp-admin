@@ -49,7 +49,7 @@ public class FgrappAdminRunner implements CommandLineRunner{
                            "##        ######   ##     ## ##     ## ##        ##");
         System.out.println("App running at:\n" +
                 "- Local:   http://localhost:"+port+"/doc.html (v"+version+")\n" +
-                "- Network: http://"+ip+":"+port+"/doc.html (v"+version+")\n" +
+                "- Network: https://"+ip+":"+port+"/doc.html (v"+version+")\n" +
                 "- GitHub： "+gtihub);
     }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "fgrapp-admin-mini",
+  "version": "1.0.0",
+  "description": "fgrapp-admin-mini",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "blog"
+  ],
+  "author": "FGRAPP",
+  "license": "ISC",
+  "dependencies": {
+    "@vant/weapp": "^1.8.4",
+    "miniprogram-api-promise": "^1.0.4",
+    "wxmp-rsa": "^2.1.0"
+  }
+}

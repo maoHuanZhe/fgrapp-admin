@@ -1,0 +1,88 @@
+<!--index.wxml-->
+<cu-custom isCustom="{{true}}">
+  <text slot="content" class="text-black text-bold">题库</text>
+</cu-custom>
+<!-- 加载模块 -->
+<view class='load-progress {{loadProgress!=0?"show":"hide"}}' style="top:{{CustomBar}}px;">
+  <view class='load-progress-bar bg-green' style="transform: translate3d(-{{100-loadProgress}}%, 0px, 0px);"></view>
+  <view class='load-progress-spinner text-green'></view>
+</view>
+<!-- 导航栏区域 -->
+<scroll-view wx:if="{{mainList.length>0}}" scroll-x class="bg-white nav">
+  <view class="flex text-center">
+    <view class="cu-item flex-sub {{item.id==TabCur?'text-orange cur':''}}" wx:for="{{mainList}}" wx:key="id"
+      bindtap="tabSelect" data-id="{{item.id}}" data-index="{{index}}">
+      {{item.name}}
+    </view>
+    <view class="cu-item flex-sub" bindtap="showAll">
+      <text class="cuIcon-cascades lg text-gray"></text>
+    </view>
+  </view>
+</scroll-view>
+<scroll-view refresher-triggered="{{refresher}}" refresher-enabled bindrefresherrefresh="refresher" enhanced bindscrolltolower="loadMore" style="height: {{ContentHeight}}px;" scroll-y class="{{drawerShow?'show':''}} {{loading?'bg-white':'DrawerPage'}}">
+
+  <van-skeleton title row="50" loading="{{ loading }}">
+  <!-- 列表区域 -->
+  <view wx:if="{{list.length>0}}">
+    <view class="cu-card article" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="cardClick">
+      <view class="cu-item shadow">
+        <view class="title">
+          <view class="text-cut">{{item.problem}}</view>
+        </view>
+        <view class="content">
+          <view class="desc">
+            <view>
+              <view class="cu-tag bg-red light sm round" wx:for="{{item.classNames}}" wx:for-index="idx" wx:key="id"
+                wx:for-item='className'>{{className}}</view>
+            </view>
+            <view class="text-gray text-sm flex justify-between margin-top-xs">
+              {{item.createTime}}
+              <view class="text-gray text-sm">
+                <text class="cuIcon-attentionfill margin-lr-xs"></text> {{item.readNum}}
+                <text class="cuIcon-appreciatefill margin-lr-xs"></text> {{item.likeNum}}
+                <text class="cuIcon-favorfill margin-lr-xs"></text> {{item.collectNum}}
+                <text class="cuIcon-messagefill margin-lr-xs"></text> {{item.commentNum}}
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="cu-load bg-grey {{list.length < total ? 'loading':'over'}}"></view>
+  </view>
+  <view wx:else>
+    <van-empty image="search" description="列表为空" />
+  </view>
+  </van-skeleton>
+</scroll-view>
+<!-- 分类抽屉 -->
+<view class="DrawerClose {{drawerShow?'show':''}}" bindtap="hideModal">
+  <text class="cuIcon-pullright"></text>
+</view>
+<scroll-view style="margin-top: {{CustomBar}}px;" scroll-y class="DrawerWindow {{ drawerShow ? 'show':''}}">
+  <view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg">
+    <view class="cu-item arrow" wx:for="{{allList}}" wx:key="index" bindtap="tabSelect" data-id="{{item.id}}"
+      data-index="{{index}}">
+      <view class="content">
+        <text class="cuIcon-selection text-grey"></text>
+        <text class="text-grey">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view bindtap="NavChange" data-cur="index" class="action {{PageCur=='index'?'text-orange':'text-gray'}}">
+    <view class="cuIcon-homefill"></view> 主页
+  </view>
+  <view bindtap="NavChange" data-cur="blog" class="action {{PageCur=='blog'?'text-orange':'text-gray'}}">
+    <view class="cuIcon-newsfill"></view> 博客
+  </view>
+  <view bindtap="NavChange" data-cur="topic" class="action {{PageCur=='topic'?'text-orange':'text-gray'}}">
+    <view class="cuIcon-similar"></view> 题库
+  </view>
+  <view bindtap="NavChange" data-cur="about" class="action {{PageCur=='about'?'text-orange':'text-gray'}}">
+    <view class="cuIcon-my">
+    </view>
+    我的
+  </view>
+</view>

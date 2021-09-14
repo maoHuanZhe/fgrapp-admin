@@ -26,4 +26,6 @@ public interface BlogMapper extends FgrMapper<BlogDo> {
     IPage<List<Map<String, Object>>> getBlogPage(Page<BlogDo> paramPage, @Param(Constants.WRAPPER) Map<String, Object> map);
 
     void dels(Long id);
+
+    IPage<List<Map<String, Object>>> search(Page<BlogDo> paramPage, @Param(Constants.WRAPPER) Map<String, Object> map);
 }

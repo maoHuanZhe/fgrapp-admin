@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "towxml":"/towxml/towxml",
+    "van-transition": "@vant/weapp/transition/index",
+    "van-share-sheet": "@vant/weapp/share-sheet/index",
+    "van-skeleton": "@vant/weapp/skeleton/index"
+  }
+}

@@ -35,13 +35,15 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
     private final BlogOperateNumMapper operateNumMapper;
     private final CommentMapper commentMapper;
     private final BlogUserMapper blogUserMapper;
+    private final BlogCollectUserMapper blogCollectUserMapper;
 
-    public BlogService(ClassMapper classMapper, BlogClassMapper blogClassMapper, BlogOperateNumMapper operateNumMapper, CommentMapper commentMapper, BlogUserMapper blogUserMapper) {
+    public BlogService(ClassMapper classMapper, BlogClassMapper blogClassMapper, BlogOperateNumMapper operateNumMapper, CommentMapper commentMapper, BlogUserMapper blogUserMapper, BlogCollectUserMapper blogCollectUserMapper) {
         this.classMapper = classMapper;
         this.blogClassMapper = blogClassMapper;
         this.operateNumMapper = operateNumMapper;
         this.blogUserMapper = blogUserMapper;
         this.commentMapper = commentMapper;
+        this.blogCollectUserMapper = blogCollectUserMapper;
     }
 
     public IPage<List<Map<String, Object>>> getPage(Map<String, Object> map) {
@@ -58,7 +60,7 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
         Long blogId = info.getId();
         //新增博客操作数据
         operateNumMapper.insert(BlogOperateNumDo.builder()
-                .blogId(blogId).likeNum(0L).readNum(0L).build());
+                .blogId(blogId).likeNum(0L).readNum(0L).collectNum(0L).build());
         List<BlogClassDo> blogClassDos = new ArrayList<>();
         //判断是否有需要添加的分类
         List<String> addClassNames = info.getAddClassNames();
@@ -145,8 +147,11 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
         return info;
     }
 
-    public IPage<List<Map<String, Object>>> getBlogPage(Map<String, Object> map) {
-        return baseMapper.getBlogPage(PageUtil.getParamPage(map,BlogDo.class),map);
+    public Map<String,Object> getBlogPage(Map<String, Object> map) {
+        Map<String,Object> returnMap = new HashMap<>(2);
+        IPage<List<Map<String, Object>>> page = baseMapper.getBlogPage(PageUtil.getParamPage(map, BlogDo.class), map);
+        //判断需不需要获取分类数据
+        return getStringObjectMap(map, returnMap, page, classMapper);
     }
 
     public void dels(Long id) {
@@ -161,32 +166,45 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
         if (!StpUtil.isLogin()){
             //未登陆
             blogOperateNumDo.setCanLike(true);
+            blogOperateNumDo.setCanCollect(true);
         } else {
             Long userId = FgrUtil.getUserId();
             Integer count = blogUserMapper.selectCount(new LambdaQueryWrapper<BlogUserDo>()
                     .eq(BlogUserDo::getBlogId, id)
                     .eq(BlogUserDo::getUserId, userId));
             blogOperateNumDo.setCanLike(count == 0);
+            Integer selectCount = blogCollectUserMapper.selectCount((new LambdaQueryWrapper<BlogCollectUserDo>()
+                    .eq(BlogCollectUserDo::getBlogId, id)
+                    .eq(BlogCollectUserDo::getUserId, userId)));
+            blogOperateNumDo.setCanCollect(selectCount == 0);
         }
         return blogOperateNumDo;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateLickNum(Long id, int num) {
+    public BlogOperateNumDo updateLickNum(Long id, int num) {
         //点赞数量改变
         Long userId = FgrUtil.getUserId();
-        operateNumMapper.updateLickNum(id,num);
         if (num > 0){
             //点赞操作
-            //添加博客与用户点赞关联
-            blogUserMapper.insert(new BlogUserDo(id,userId));
+            //判断之前有没有点赞
+            Integer count = blogUserMapper.selectCount(new LambdaQueryWrapper<BlogUserDo>()
+                    .eq(BlogUserDo::getBlogId, id)
+                    .eq(BlogUserDo::getUserId, userId));
+            if (count == 0){
+                //添加博客与用户点赞关联
+                blogUserMapper.insert(new BlogUserDo(id,userId));
+                operateNumMapper.updateLickNum(id,num);
+            }
         } else {
             //取消点赞操作
             //删除博客与用户点赞关联
             blogUserMapper.delete(new LambdaUpdateWrapper<BlogUserDo>()
             .eq(BlogUserDo::getUserId,userId)
             .eq(BlogUserDo::getBlogId,id));
+            operateNumMapper.updateLickNum(id,num);
         }
+        return getOperateNum(id);
     }
 
     public Map<String, Object> getDetailInfo(Long id) {
@@ -197,9 +215,39 @@ public class BlogService extends FgrService<BlogMapper, BlogDo> {
                 .eq(CommentDo::getBlogId, id)
                 .eq(CommentDo::getIsAudit, 1)
                 .orderByDesc(CommentDo::getCreateTime));
+        Long classId = blogDo.getClassIds().get(0);
+        List<BlogClassDo> blogClassDos = blogClassMapper.selectList(new LambdaQueryWrapper<BlogClassDo>()
+                .eq(BlogClassDo::getClassId, classId).orderByAsc(BlogClassDo::getSortNum));
+        List<Long> blogIds = new ArrayList<>();
+        blogClassDos.forEach(item-> blogIds.add(item.getBlogId()));
         map.put("blog",blogDo);
         map.put("operateNum",operateNum);
         map.put("commentDos",commentDos);
+        map.put("ids",blogIds);
         return map;
+    }
+    @Transactional(rollbackFor = Exception.class)
+    public BlogOperateNumDo updateCollectNum(Long id, int num) {
+        Long userId = FgrUtil.getUserId();
+        if (num > 0){
+            //点赞操作
+            //判断之前有没有点赞
+            Integer count = blogCollectUserMapper.selectCount(new LambdaQueryWrapper<BlogCollectUserDo>()
+                    .eq(BlogCollectUserDo::getBlogId, id)
+                    .eq(BlogCollectUserDo::getUserId, userId));
+            if (count == 0){
+                //添加博客与用户点赞关联
+                blogCollectUserMapper.insert(new BlogCollectUserDo(id,userId));
+                operateNumMapper.updateCollectNum(id,num);
+            }
+        } else {
+            //取消点赞操作
+            //删除博客与用户点赞关联
+            blogCollectUserMapper.delete(new LambdaUpdateWrapper<BlogCollectUserDo>()
+                    .eq(BlogCollectUserDo::getUserId,userId)
+                    .eq(BlogCollectUserDo::getBlogId,id));
+            operateNumMapper.updateCollectNum(id,num);
+        }
+        return getOperateNum(id);
     }
 }

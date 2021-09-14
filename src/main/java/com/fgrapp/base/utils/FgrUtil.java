@@ -6,7 +6,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
-import com.fgrapp.admin.domain.SysConfigDo;
 import com.fgrapp.admin.domain.SysUserDo;
 import com.fgrapp.base.constant.UserConstants;
 import com.fgrapp.base.domain.BaseDo;
@@ -31,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +42,10 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class FgrUtil {
+
+    public static boolean isAdmin(){
+        return isAdmin(Objects.requireNonNull(getSysUserDo()));
+    }
 
     /**
      * 验证邮箱
@@ -329,5 +333,18 @@ public class FgrUtil {
             }
         }
         return false;
+    }
+    /**
+     * 判断用户是否是超级管理员
+     * @param roles
+     * @return
+     */
+    public static boolean isAdmin(Object roles) {
+        try {
+            List<String> stringList = (List<String>) roles;
+            return stringList.size() == 1 && "admin".equals(stringList.get(0));
+        } catch (Exception e){
+            return false;
+        }
     }
 }

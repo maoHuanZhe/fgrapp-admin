@@ -9,7 +9,6 @@ import com.fgrapp.base.service.FgrService;
 import com.fgrapp.base.utils.FgrUtil;
 import com.fgrapp.base.utils.PageUtil;
 import com.fgrapp.blog.dao.ClassMapper;
-import com.fgrapp.blog.domain.BlogUserDo;
 import com.fgrapp.blog.domain.ClassDo;
 import com.fgrapp.topic.dao.*;
 import com.fgrapp.topic.domain.*;
@@ -130,9 +129,13 @@ public class TopicService extends FgrService<TopicMapper, TopicDo> {
         baseMapper.dels(id);
     }
 
-    public IPage<List<Map<String, Object>>> getTopicPage(Map<String, Object> map) {
-        return baseMapper.getTopicPage(PageUtil.getParamPage(map,TopicDo.class),map);
+    public Map<String,Object> getTopicPage(Map<String, Object> map) {
+        Map<String,Object> returnMap = new HashMap<>(2);
+        IPage<List<Map<String, Object>>> page = baseMapper.getTopicPage(PageUtil.getParamPage(map, TopicDo.class), map);
+        //判断需不需要获取分类数据
+        return getStringObjectMap(map, returnMap, page, classMapper);
     }
+
 
     public TopicDo getInfo(Long id) {
         //获取基本信息
@@ -158,9 +161,15 @@ public class TopicService extends FgrService<TopicMapper, TopicDo> {
                 .eq(TopicCommentDo::getTopicId, id)
                 .eq(TopicCommentDo::getIsAudit, 1)
                 .orderByDesc(TopicCommentDo::getCreateTime));
+        Long classId = topicDo.getClassIds().get(0);
+        List<TopicClassDo> topicClassDos = topicClassMapper.selectList(new LambdaQueryWrapper<TopicClassDo>()
+                .eq(TopicClassDo::getClassId, classId).orderByAsc(TopicClassDo::getSortNum));
+        List<Long> ids = new ArrayList<>();
+        topicClassDos.forEach(item -> ids.add(item.getTopicId()));
         map.put("topic",topicDo);
         map.put("operateNum",operateNum);
         map.put("commentDos",commentDos);
+        map.put("ids",ids);
         return map;
     }
     public TopicOperateNumDo getOperateNum(Long id) {
@@ -187,37 +196,51 @@ public class TopicService extends FgrService<TopicMapper, TopicDo> {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateLickNum(Long id, int num) {
+    public TopicOperateNumDo updateLickNum(Long id, int num) {
         //点赞数量改变
         Long userId = FgrUtil.getUserId();
-        operateNumMapper.updateLickNum(id,num);
         if (num > 0){
             //点赞操作
-            //添加问题与用户点赞关联
-            likeUserMapper.insert(new TopicLikeUserDo(id,userId));
+            Integer count = likeUserMapper.selectCount(new LambdaQueryWrapper<TopicLikeUserDo>()
+                    .eq(TopicLikeUserDo::getTopicId, id)
+                    .eq(TopicLikeUserDo::getUserId, userId));
+            if (count == 0){
+                //添加问题与用户点赞关联
+                likeUserMapper.insert(new TopicLikeUserDo(id,userId));
+                operateNumMapper.updateLickNum(id,num);
+            }
         } else {
             //取消点赞操作
             //删除问题与用户点赞关联
             likeUserMapper.delete(new LambdaUpdateWrapper<TopicLikeUserDo>()
                     .eq(TopicLikeUserDo::getUserId,userId)
                     .eq(TopicLikeUserDo::getTopicId,id));
+            operateNumMapper.updateLickNum(id,num);
         }
+        return getOperateNum(id);
     }
 
-    public void updateCollectNum(Long id, int num) {
+    public TopicOperateNumDo updateCollectNum(Long id, int num) {
         //收藏数量改变
         Long userId = FgrUtil.getUserId();
-        operateNumMapper.updateCollectNum(id,num);
         if (num > 0){
             //收藏操作
-            //添加问题与用户收藏关联
-            collectUserMapper.insert(new TopicCollectUserDo(id,userId));
+            Integer selectCount = collectUserMapper.selectCount(new LambdaQueryWrapper<TopicCollectUserDo>()
+                    .eq(TopicCollectUserDo::getTopicId, id)
+                    .eq(TopicCollectUserDo::getUserId, userId));
+            if (selectCount == 0) {
+                //添加问题与用户收藏关联
+                collectUserMapper.insert(new TopicCollectUserDo(id, userId));
+                operateNumMapper.updateCollectNum(id, num);
+            }
         } else {
             //取消收藏操作
             //删除问题·与用户收藏关联
             collectUserMapper.delete(new LambdaUpdateWrapper<TopicCollectUserDo>()
                     .eq(TopicCollectUserDo::getUserId,userId)
                     .eq(TopicCollectUserDo::getTopicId,id));
+                operateNumMapper.updateCollectNum(id,num);
         }
+        return getOperateNum(id);
     }
 }

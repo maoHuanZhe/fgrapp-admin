@@ -1,0 +1,24 @@
+.foot>.cu-bar {
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    bottom: 0;
+    width: 100%;
+}
+.main {
+  margin-top: 5px;
+  padding-bottom: 60px;
+}
+.probleTitle {
+  text-align: center;
+  font-size: 40rpx;
+  font-weight: 900;
+  color: var(--black);
+  padding: 10rpx;
+}
+.cu-list.menu-avatar.comment>.cu-item {
+  padding: 30rpx;
+}
+.cu-bar.input {
+  padding-right: 0;
+}

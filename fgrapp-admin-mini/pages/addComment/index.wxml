@@ -1,0 +1,9 @@
+<!--pages/addComment/index.wxml-->
+<cu-custom isBack="{{true}}">
+  <text slot="content" class="text-black text-bold">添加评论</text>
+</cu-custom>
+<view class="margin-top" style="height: 300px;overflow-y: scroll;">
+	<van-field model:value="{{ content }}" type="textarea" placeholder="请输入评论" focus autosize
+			maxlength="{{1024}}" custom-style="height: 300px;" show-word-limit="{{true}}" />
+</view>
+<button class="cu-btn block bg-blue margin-tb-sm lg margin-xl" bindtap="addCommentCommit"> 提交评论</button>

@@ -8,6 +8,7 @@ import com.fgrapp.base.log.Log;
 import com.fgrapp.base.result.ResponseResultBody;
 import com.fgrapp.topic.domain.TopicCommentDo;
 import com.fgrapp.topic.domain.TopicDo;
+import com.fgrapp.topic.domain.TopicOperateNumDo;
 import com.fgrapp.topic.service.TopicCommentService;
 import com.fgrapp.topic.service.TopicService;
 import io.swagger.annotations.Api;
@@ -44,7 +45,7 @@ public class TopicPageController extends FgrController {
 
     @GetMapping("list")
     @ApiOperation("获取问题分页数据(问题页面显示)")
-    public IPage<List<Map<String,Object>>> page(@RequestParam Map<String,Object> map){
+    public Map<String,Object> page(@RequestParam Map<String,Object> map){
         return service.getTopicPage(map);
     }
 
@@ -64,14 +65,14 @@ public class TopicPageController extends FgrController {
     @SaCheckLogin
     @PutMapping("/operateNum/{id}/{num}")
     @ApiOperation("问题点赞与取消点赞操作")
-    public void updateLickNum(@PathVariable Long id,@PathVariable int num){
-        service.updateLickNum(id,num);
+    public TopicOperateNumDo updateLickNum(@PathVariable Long id,@PathVariable int num){
+        return service.updateLickNum(id,num);
     }
     @SaCheckLogin
     @PutMapping("/operateNum/collect/{id}/{num}")
     @ApiOperation("问题收藏与取消收藏操作")
-    public void updateCollectNum(@PathVariable Long id,@PathVariable int num){
-        service.updateCollectNum(id,num);
+    public TopicOperateNumDo updateCollectNum(@PathVariable Long id,@PathVariable int num){
+        return service.updateCollectNum(id,num);
     }
 
     @PostMapping

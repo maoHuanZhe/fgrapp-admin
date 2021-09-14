@@ -3,13 +3,16 @@ package com.fgrapp.weChat.service;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.anji.captcha.service.CaptchaService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fgrapp.admin.dao.SysUserMapper;
+import com.fgrapp.admin.domain.LoginBody;
 import com.fgrapp.admin.domain.SysUserDo;
 import com.fgrapp.admin.service.SysLoginService;
 import com.fgrapp.weChat.config.WechatInfoConfig;
 import com.fgrapp.weChat.domain.WxCode2SessionPBO;
 import com.fgrapp.weChat.util.WeChatUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,13 +26,16 @@ public class WeChatUserLoginService {
     private final SysUserMapper userMapper;
     private final WechatInfoConfig wechatInfoConfig;
     private final SysLoginService loginService;
+    @Autowired
+    private CaptchaService captchaService;
+
     public WeChatUserLoginService(SysUserMapper userMapper, WechatInfoConfig wechatInfoConfig, SysLoginService loginService) {
         this.userMapper = userMapper;
         this.wechatInfoConfig = wechatInfoConfig;
         this.loginService = loginService;
     }
 
-    public SysUserDo login(WxCode2SessionPBO wxCode2SessionPBO) {
+    public String login(WxCode2SessionPBO wxCode2SessionPBO) {
         //开发者服务器 登录凭证校验接口 appId + appSecret + 接收小程序发送的code
         JSONObject sessionKeyOpenId = WeChatUtil.getSessionKeyOrOpenId(wechatInfoConfig.getAppId(),
                 wechatInfoConfig.getAppSecret(), wxCode2SessionPBO.getCode());
@@ -55,8 +61,11 @@ public class WeChatUserLoginService {
             userMapper.insert(userDo);
         }
         //用户已存在 直接登录
-        String token = loginService.userLogin(userDo);
-        userDo.setPassword(token);
-        return userDo;
+        return loginService.userLogin(userDo);
+    }
+
+    public String loginOfPassword(LoginBody loginBody) {
+//        captchaService.verification()
+        return loginService.loginOfPassward(loginBody);
     }
 }

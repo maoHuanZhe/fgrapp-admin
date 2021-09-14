@@ -112,6 +112,13 @@
       </el-tabs>
     </div>
     <div>未注册手机验证后自动登录</div>
+    <Verify
+        @success="success"
+        mode="pop"
+        captchaType="blockPuzzle"
+        :imgSize="{ width: '330px', height: '155px' }"
+        ref="verify"
+    ></Verify>
   </div>
 
 </template>
@@ -121,9 +128,13 @@
     import {getCodeImg} from "@/api/login";
     import Cookies from "js-cookie";
     import {decrypt, encrypt} from "@/utils/jsencrypt";
+    import Verify from "@/components/verifition/Verify";
 
     export default {
         name: "index",
+        components: {
+            Verify
+        },
       data(){
           return{
             suffix:'1',
@@ -132,7 +143,8 @@
             RegisterLoading:false,
             registerForm: {
               phone:"",
-              code:""
+              code:"",
+              email:""
             },
             registerRules: {
               code: [
@@ -166,22 +178,28 @@
           }
       },
       methods:{
+          success(params){
+              console.log(params);
+              sendEmailMessage(this.registerForm.email).then(() => {
+                  this.buttonText = 60;
+                  let intervalID =
+                      window.setInterval(()=>{
+                          setTimeout(()=>{
+                              if (this.buttonText){
+                                  this.buttonText = this.buttonText - 1;
+                              } else {
+                                  this.buttonText = '获取验证码';
+                                  clearInterval(intervalID)
+                              }
+                          },0)
+                      },1000)
+              });
+          },
         getMessageCodeOfEmail(){
           if (this.registerForm.email.length > 6) {
-            sendEmailMessage(this.registerForm.email).then(() => {
-              this.buttonText = 60;
-              let intervalID =
-                window.setInterval(()=>{
-                  setTimeout(()=>{
-                    if (this.buttonText){
-                      this.buttonText = this.buttonText - 1;
-                    } else {
-                      this.buttonText = '获取验证码';
-                      clearInterval(intervalID)
-                    }
-                  },0)
-                },1000)
-            });
+              this.$refs.verify.show()
+          } else {
+              this.$message.warning("请输入正确的邮箱")
           }
         },
         handleClick(tab, event) {

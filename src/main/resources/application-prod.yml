@@ -1,0 +1,8 @@
+http:
+  port: 9657
+server:
+  port: 9658
+  ssl:
+    key-store: classpath:serverSSL/server.fgrapp.com.pfx
+    key-store-password: nv31ty46
+    keyStoreType: PKCS12

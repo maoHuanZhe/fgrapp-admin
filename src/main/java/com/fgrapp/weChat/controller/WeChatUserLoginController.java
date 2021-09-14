@@ -1,5 +1,6 @@
 package com.fgrapp.weChat.controller;
 
+import com.fgrapp.admin.domain.LoginBody;
 import com.fgrapp.admin.domain.SysUserDo;
 import com.fgrapp.base.result.ResponseResultBody;
 import com.fgrapp.weChat.domain.WxCode2SessionPBO;
@@ -30,7 +31,12 @@ public class WeChatUserLoginController {
 
     @PostMapping("/miniLogin")
     @ApiOperation(value = "小程序授权登录", httpMethod = "POST")
-    public SysUserDo login(@RequestBody WxCode2SessionPBO wxCode2SessionPBO) {
+    public String login(@RequestBody WxCode2SessionPBO wxCode2SessionPBO) {
         return service.login(wxCode2SessionPBO);
+    }
+    @ApiOperation(value = "密码登录")
+    @PostMapping("/login/password")
+    public String login(@RequestBody LoginBody loginBody){
+        return service.loginOfPassword(loginBody);
     }
 }

@@ -1,0 +1,27 @@
+{
+  "entryPagePath": "pages/index/index",
+  "pages": [
+    "pages/index/index",
+    "pages/index/search/index",
+    "pages/blog/index",
+    "pages/blog/detail/detail",
+    "pages/topic/index",
+    "pages/topic/detail/index",
+    "pages/about/index",
+    "pages/about/detail/index",
+    "pages/register/index",
+    "pages/addComment/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "FGRAPP",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "usingComponents": {
+    "cu-custom": "/lib/colorUI/components/cu-custom",
+    "aj-captcha": "/components/aj-captcha/index"
+  },
+  "sitemapLocation": "sitemap.json"
+}

@@ -2,6 +2,9 @@
   <div class="mavonEditor">
     <div class="el-backtop">
       <div style="width: 50px;">
+        <div @click.stop="switchDefilePre" class="rightDiv">
+          <svg-icon  icon-class="left"/>
+        </div>
         <div @click.stop="show=!show" class="rightDiv" style="color: #1989fa;">
           {{ show?"隐":"显" }}
         </div>
@@ -26,6 +29,9 @@
         </div>
         <div @click.stop="blogClick" class="rightDiv" style="color: #1989fa;">
           文
+        </div>
+        <div @click.stop="switchDefileNext" class="rightDiv">
+          <svg-icon  icon-class="right"/>
         </div>
         <div class="rightDiv" style="color: #1989fa;">
           UP
@@ -123,15 +129,32 @@
     },
     created(){
       const id = this.$route.params && this.$route.params.topicId;
-      this.topicId = id;
-      getDetailInfo(id).then(({data}) => {
-        this.form = data.topic;
-        this.commentList = this.getRootList(data.commentDos);
-        this.commentNum = data.commentDos.length;
-        this.operateNum = data.operateNum;
-      })
+      this.getInfo(id);
     },
     methods:{
+        getInfo(id){
+            this.topicId = id;
+            getDetailInfo(id).then(({data}) => {
+                this.ids = data.ids;
+                this.index= data.ids.indexOf(data.topic.id);
+                this.form = data.topic;
+                this.commentList = this.getRootList(data.commentDos);
+                this.commentNum = data.commentDos.length;
+                this.operateNum = data.operateNum;
+            })
+        },
+        switchDefilePre(){
+            if (this.index === 0){
+                return this.$message.warning("已经是分类内第一题了")
+            }
+            this.getInfo(this.ids[this.index-1])
+        },
+        switchDefileNext(){
+            if (this.index === (this.ids.length -1)){
+                return this.$message.warning("已经是分类内最后一题了")
+            }
+            this.getInfo(this.ids[this.index+1])
+        },
         blogClick(){
             window.open('https://blog.fgrapp.com/class/'+this.form.classIds[0])
         },
@@ -229,7 +252,7 @@
   .el-backtop {
     z-index: 1996;
     right: 100px;
-    top: 200px;
+    top: 240px;
   }
   .rightDiv{
     height: 100%;

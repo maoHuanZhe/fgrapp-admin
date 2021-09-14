@@ -1,0 +1,98 @@
+<!--pages/detail/detail.wxml-->
+<cu-custom isCustom="{{true}}">
+  <text slot="content" class="text-black text-bold">详情</text>
+</cu-custom>
+<!-- 加载模块 -->
+<view class='load-progress {{loadProgress!=0?"show":"hide"}}' style="top:{{CustomBar}}px;">
+  <view class='load-progress-bar bg-green' style="transform: translate3d(-{{100-loadProgress}}%, 0px, 0px);"></view>
+  <view class='load-progress-spinner text-green'></view>
+</view>
+
+<van-skeleton title row="50" loading="{{ loadProgress!=0 }}">
+	<view class="cu-card article no-card">
+		<view class="cu-item shadow">
+			<view class="probleTitle">
+				{{ blogInfo.title }}
+			</view>
+			<view class="flex justify-center margin-bottom-xs">
+				<view class="cu-tag bg-red light sm round" wx:for="{{blogInfo.addClassNames}}" wx:for-index="idx" wx:key="id"
+					wx:for-item='className'>{{className}}</view>
+			</view>
+			<view class="text-gray text-sm flex justify-center">
+				<view>{{blogInfo.createTime}}</view>
+				<view class="text-gray text-sm">
+					<text class="cuIcon-attentionfill margin-lr-xs"></text> {{operateNum.readNum}}
+					<text class="cuIcon-appreciatefill margin-lr-xs"></text> {{operateNum.likeNum}}
+					<text class="cuIcon-favorfill margin-lr-xs"></text> {{operateNum.collectNum}}
+					<text class="cuIcon-messagefill margin-lr-xs"></text> {{commentNum}}
+				</view>
+			</view>
+		</view>
+	</view>
+	<van-transition custom-class="block" name="fade-up">
+		<view class="main">
+			<view class="detil">
+				<towxml nodes="{{article}}" />
+			</view>
+			<view wx:for="{{commentList}}" item="{{item}}" wx:key="id" class="cu-list menu-avatar comment solids-top">
+				<view class="cu-item">
+					<view class="content">
+						<view class="text-grey">{{ item.createAt }}</view>
+						<view class="text-gray text-content text-df">
+							{{ item.content }}
+						</view>
+						<view wx:for="{{ item.childArr }}" wx:key="id" wx:for-item='commentItem'
+							class="bg-grey padding-sm radius margin-top-sm  text-sm">
+							<view class="flex">
+								<view>{{ commentItem.createAt }}：</view>
+								<view class="flex-sub">{{ commentItem.content }}</view>
+							</view>
+						</view>
+						<view class="margin-top-sm flex justify-between">
+							<view class="text-gray text-df">{{ item.createTime }}</view>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</van-transition>
+</van-skeleton>
+
+<view class="foot">
+	<view class="cu-bar input">
+		<view class="radius"> 
+					<button class="cu-btn bg-cyan shadow" bindtap="switchDetailPer">
+						<text class="cuIcon-back"></text>上一篇</button>
+				</view>
+		<!-- 点赞 -->
+		<view class="action" bindtap="likeClick">
+			<text wx:if="{{operateNum.canLike}}" class="cuIcon-appreciate text-grey"></text>
+			<text wx:else class="cuIcon-appreciatefill text-red"></text>
+		</view>
+		<!-- 收藏 -->
+		<view class="action" bindtap="collectClick">
+			<text wx:if="{{operateNum.canCollect}}" class="cuIcon-favor text-grey"></text>
+			<text wx:else class="cuIcon-favorfill text-yellow"></text>
+		</view>
+		<!-- 评论 -->
+		<view class="action" bindtap="addCommentModel">
+			<text class="cuIcon-messagefill text-grey"></text>
+		</view>
+		<!-- 分享按钮 -->
+		<view class="action" bindtap="addShow">
+			<text class="cuIcon-share text-orange"></text>
+		</view>
+		<view class="radius" style="margin-left:20rpx">
+					<button class="cu-btn bg-cyan shadow" bindtap="switchDetailNext">
+						下一篇<text class="cuIcon-right"></text></button>
+				</view>
+	</view>
+</view>
+<!--分享面板-->
+<van-share-sheet
+  show="{{ showShare }}"
+  title="立即分享给好友"
+  options="{{ options }}"
+  bind:select="onSelect"
+  bind:close="onClose"
+/>
